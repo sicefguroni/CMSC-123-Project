@@ -1,5 +1,5 @@
 import flet as ft
-from pages.prescription_page import prescription_page
+from pages.prescription_page import prescription_page, create_add_prescription_page
 from pages.landmark_page import landmark_page
 from pages.reminder_page import reminder_page
 from pages.inventory_page import inventory_page
@@ -9,6 +9,29 @@ def main(page: ft.Page):
     page.padding = 0
     page.spacing = 0
     selected_icon = "Prescription"  # default landing page
+    current_view = "prescription"
+
+    def toggle_prescription_view():
+        nonlocal current_view
+        if current_view == "prescription":
+            prescription.visible = False
+            add_prescription.visible = True
+            current_view = "add_prescription"
+        else:
+            prescription.visible = True
+            add_prescription.visible = False
+            current_view = "prescription"
+        page.update()
+
+    #create pages with view toggle callback
+    prescription = prescription_page(toggle_prescription_view)
+    add_prescription = create_add_prescription_page(toggle_prescription_view)
+
+    content_area = ft.Container(
+        content=ft.Stack([prescription, add_prescription]),
+        expand=True,
+        padding=ft.padding.only(top=10),
+    )
 
     # Function to handle navigation
     def on_navigation_click(e):
@@ -121,6 +144,9 @@ def main(page: ft.Page):
 
     # Add the top navigation bar and body content to the page
     page.add(main_column)
+
+    # ensure date pickers are added to the page
+    page.overlay.extend([add_prescription.content.controls[-2], add_prescription.content.controls[-1]])
 
 ft.app(
     main,
