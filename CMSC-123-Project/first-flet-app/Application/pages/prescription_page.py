@@ -91,8 +91,14 @@ class PrescriptionPage:
                                     ),
                                     ft.Row(
                                         controls=[
-                                            ft.TextButton("View Details"),
-                                            ft.TextButton("Refill"),
+                                            ft.IconButton(
+                                                icon=ft.icons.EDIT_OUTLINED,
+                                                icon_color="blue50",
+                                            ),
+                                            ft.IconButton(
+                                                icon=ft.icons.DELETE_OUTLINED,
+                                                icon_color="blue50",
+                                            ),
                                         ],
                                         alignment=ft.MainAxisAlignment.END,
                                     ),
@@ -150,13 +156,13 @@ class PrescriptionPage:
         # dosage input
         dosage = ft.TextField(
             label="Dosage",
-            width=400,
+            width=164,
             border_radius=10,
         )
 
         dosage_unit = ft.Dropdown(
             label="Dosage Unit",
-            width=400,
+            width=164,
             options=[
                 ft.dropdown.Option("mg"),
                 ft.dropdown.Option("ml"),
@@ -181,17 +187,24 @@ class PrescriptionPage:
 
         start_date = ft.TextField(
             label="Start Date",
-            width=400,
+            width=164,
             border_radius=10,
             hint_text="MM/DD/YYYY"
         )   
 
         end_date = ft.TextField(
             label="End Date",
-            width=400,
+            width=164,
             border_radius=10,
             hint_text="MM/DD/YYYY"
         )   
+
+        quantity_limit = ft.TextField(
+            label="Dispensing Quantity Limit",
+            width=400, 
+            border_radius=10,
+            hint_text="HH:MM AM/PM"
+        )
 
         def handle_save_prescription(e):
             # implement prescription saving logic
@@ -215,8 +228,8 @@ class PrescriptionPage:
                         ],
                         alignment=ft.MainAxisAlignment.END,
                     ),
-                    ft.Text("Add New Prescription", size=24, weight=ft.FontWeight.BOLD),
-                    ft.Container(height=20), # spacer
+                    ft.Text("Add New Prescription", size=20, weight=ft.FontWeight.BOLD),
+                    ft.Container(height=10), # spacer
                     medication_name,
                     ft.Row(
                         controls=[dosage, dosage_unit],
@@ -227,6 +240,7 @@ class PrescriptionPage:
                         controls=[start_date, end_date],
                         alignment=ft.MainAxisAlignment.CENTER,
                     ),
+                    quantity_limit,
                     doctor_name,
                     ft.Container(height=20),
                     ft.ElevatedButton(

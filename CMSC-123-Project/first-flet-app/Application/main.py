@@ -6,8 +6,9 @@ from pages.inventory_page import inventory_page
 
 def main(page: ft.Page):
     # Set up the page
-    page.padding = 0
-    page.spacing = 0
+    page.window_width = 414
+    page.window_height = 736
+    page.title = "Medion"
     
     selected_icon = "Prescription"  # default landing page
 
@@ -19,6 +20,18 @@ def main(page: ft.Page):
     landmark = landmark_page()
     reminder = reminder_page()
     inventory = inventory_page()
+
+    # Create default app bar 
+    page.appbar = ft.AppBar(
+        leading=ft.Image(src="Medion-Logo.png", width=32, height=32),
+        leading_width=50,
+        title=ft.Text("Medion"),
+        center_title=False,
+        bgcolor=ft.colors.SURFACE_VARIANT,
+        actions=[
+                ft.IconButton(ft.icons.HELP, tooltip=f"Help for Medion")
+        ],
+    )
 
     # Function to handle navigation
     def on_navigation_click(e):
@@ -126,9 +139,6 @@ def main(page: ft.Page):
 
     # Add the top navigation bar and body content to the page
     page.add(main_column)
-
-    # ensure date pickers are added to the page's overlay
-    page.overlay.extend(prescription_pages[1].content.controls[-2:])
 
 ft.app(
     main,
