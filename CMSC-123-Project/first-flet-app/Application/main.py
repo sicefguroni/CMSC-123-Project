@@ -1,5 +1,5 @@
 import flet as ft
-from pages.prescription_page import prescription_page, create_add_prescription_page
+from pages.prescription_page import PrescriptionPage
 from pages.landmark_page import landmark_page
 from pages.reminder_page import reminder_page
 from pages.inventory_page import inventory_page
@@ -8,36 +8,22 @@ def main(page: ft.Page):
     # Set up the page
     page.padding = 0
     page.spacing = 0
+    
     selected_icon = "Prescription"  # default landing page
-    current_view = "prescription"
 
-    def toggle_prescription_view():
-        nonlocal current_view
-        if current_view == "prescription":
-            prescription.visible = False
-            add_prescription.visible = True
-            current_view = "add_prescription"
-        else:
-            prescription.visible = True
-            add_prescription.visible = False
-            current_view = "prescription"
-        page.update()
+    # Create prescription module
+    prescription_module = PrescriptionPage(page)
+    prescription_pages = prescription_module.get_pages()
 
-    #create pages with view toggle callback
-    prescription = prescription_page(toggle_prescription_view)
-    add_prescription = create_add_prescription_page(toggle_prescription_view)
-
-    content_area = ft.Container(
-        content=ft.Stack([prescription, add_prescription]),
-        expand=True,
-        padding=ft.padding.only(top=10),
-    )
+    # Load other pages
+    landmark = landmark_page()
+    reminder = reminder_page()
+    inventory = inventory_page()
 
     # Function to handle navigation
     def on_navigation_click(e):
         nonlocal selected_icon  
         # Update the selected icon
-        previous_icon = selected_icon 
         selected_icon = e.control.data  # Update the selected icon string
 
         page.appbar = ft.AppBar(
@@ -89,7 +75,9 @@ def main(page: ft.Page):
         return container
     
     def update_page_content(destination):
-        prescription.visible = destination == "Prescription"
+        # Update visibility for all pages
+        prescription_pages[0].visible = destination == "Prescription"
+        prescription_pages[1].visible = destination == "Prescription" and prescription_module.current_view == "add_prescription"
         landmark.visible = destination == "Landmark"
         reminder.visible = destination == "Reminder"
         inventory.visible = destination == "Inventory"
@@ -121,14 +109,8 @@ def main(page: ft.Page):
         padding=ft.padding.only(top=5, bottom=5),
     )
 
-    # load pages
-    prescription = prescription_page()
-    landmark = landmark_page()
-    reminder = reminder_page()
-    inventory = inventory_page()
-
     content_area = ft.Container(
-        content=ft.Stack([prescription, landmark, reminder, inventory]),
+        content=ft.Stack(prescription_pages + [landmark, reminder, inventory]),
         expand=True,
         padding=ft.padding.only(top=10),
     )
@@ -145,8 +127,8 @@ def main(page: ft.Page):
     # Add the top navigation bar and body content to the page
     page.add(main_column)
 
-    # ensure date pickers are added to the page
-    page.overlay.extend([add_prescription.content.controls[-2], add_prescription.content.controls[-1]])
+    # ensure date pickers are added to the page's overlay
+    page.overlay.extend(prescription_pages[1].content.controls[-2:])
 
 ft.app(
     main,
