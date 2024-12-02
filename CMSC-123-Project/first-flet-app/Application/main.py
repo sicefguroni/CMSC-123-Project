@@ -8,7 +8,7 @@ def main(page: ft.Page):
     # Set up the page
     page.padding = 0
     page.spacing = 0
-    selected_icon = "Prescription"  # default landing page
+    selected_icon = "Prescription"  # default landing page #something
 
     # Function to handle navigation
     def on_navigation_click(e):
