@@ -1,10 +1,13 @@
 import flet as ft
-import datetime
+from prescription_backend import PrescriptionManager
 
 class PrescriptionPage:
     def __init__(self, page: ft.Page):
         # Main page reference for global access if needed
         self.page = page
+
+        # Initialize Prescription
+        self.prescription_manager = PrescriptionManager()
 
         # Create main prescription page container
         self.page_container = self._create_prescription_page()
@@ -15,27 +18,14 @@ class PrescriptionPage:
         # Current view tracking
         self.current_view = "prescription"
 
+        self.prescription_list_view = None
+
     def _create_prescription_page(self):
 
         page_container = ft.Container(
             expand=True,
             visible=True
         )
-
-        def close_anchor(e):
-            text = f"Color {e.control.data}"
-            print(f"closing view from {text}")
-            anchor.close_view(text)
-        
-        def handle_change(e):
-            print(f"handle_change e.data: {e.data}")
-
-        def handle_submit(e):
-            print(f"handle_submit e.data: {e.data}")
-
-        def handle_tap(e):
-            print(f"handle_tap")
-            anchor.open_view()
 
         def fab_click(e):
             self.toggle_view()
@@ -52,67 +42,19 @@ class PrescriptionPage:
         anchor = ft.SearchBar(
             width=400,
             view_elevation=4,
-            divider_color=ft.colors.AMBER,
             bar_hint_text="Search prescriptions...",
-            view_hint_text="Choose a prescription...",
-            on_change=handle_change,
-            on_submit=handle_submit,
-            on_tap=handle_tap,
-            controls=[
-                ft.ListTile(title=ft.Text(f"Prescription {i}"), on_click=close_anchor, data=i)
-                for i in range(10)
-            ],
+            divider_color=ft.colors.AMBER,
         )
 
         # Prescription List Creation
         def create_prescription_list():
-            return ft.ListView(
-                controls=[
-                    ft.Card(
-                        content=ft.Container(
-                            content=ft.Column(
-                                controls=[
-                                    ft.ListTile(
-                                        leading=ft.Icon(ft.icons.MEDICATION),
-                                        title=ft.Text(f"Prescription {i+1}"),
-                                    ),
-                                    ft.Container(
-                                        content=ft.Column(
-                                            controls=[
-                                                ft.Text("Intake Schedule: ", weight=ft.FontWeight.BOLD),
-                                                ft.Text("Dispensing Quantity Limit: ", weight=ft.FontWeight.BOLD),
-                                                ft.Text("Next Doctor's Appointment: ", weight=ft.FontWeight.BOLD),
-                                                ft.Text("Doctor: ", weight=ft.FontWeight.BOLD),
-                                            ],
-                                            spacing=5,
-                                            horizontal_alignment=ft.CrossAxisAlignment.START,
-                                        ),
-                                        padding=ft.padding.only(left=20),
-                                    ),
-                                    ft.Row(
-                                        controls=[
-                                            ft.IconButton(
-                                                icon=ft.icons.EDIT_OUTLINED,
-                                                icon_color="blue50",
-                                            ),
-                                            ft.IconButton(
-                                                icon=ft.icons.DELETE_OUTLINED,
-                                                icon_color="blue50",
-                                            ),
-                                        ],
-                                        alignment=ft.MainAxisAlignment.END,
-                                    ),
-                                ],
-                            ),
-                            padding=10,
-                        )
-                    )
-                    for i in range(3)
-                ],
+            self.prescription_list_view = ft.ListView(
+                controls=self._create_prescription_cards(), # Use new method to populate list
                 spacing=10,
                 height=300,
                 expand=True
             )
+            return self.prescription_list_view
 
         # Main content column
         main_content = ft.Column(
@@ -124,7 +66,6 @@ class PrescriptionPage:
                 ft.Container(
                     content=ft.Column(
                         controls=[
-                            ft.Text("Recent Prescriptions", size=20, weight=ft.FontWeight.W_500),
                             create_prescription_list(),
                         ]
                     ),
@@ -147,20 +88,20 @@ class PrescriptionPage:
 
     def create_add_prescription_page(self): 
         # medication name input
-        medication_name = ft.TextField(
+        self.medication_name = ft.TextField(
             label="Medication Name",
             width=400,
             border_radius=10,
         )
 
         # dosage input
-        dosage = ft.TextField(
+        self.dosage = ft.TextField(
             label="Dosage",
             width=164,
             border_radius=10,
         )
 
-        dosage_unit = ft.Dropdown(
+        self.dosage_unit = ft.Dropdown(
             label="Dosage Unit",
             width=164,
             options=[
@@ -172,51 +113,65 @@ class PrescriptionPage:
             ],
         )
 
-        frequency = ft.TextField(
+        self.frequency = ft.TextField(
             label="Frequency",
             width=400,
             border_radius=10,
             hint_text="e.g., Once daily, Twice a day"
         )
 
-        doctor_name = ft.TextField(
+        self.doctor_name = ft.TextField(
             label="Doctor's Name",
             width=400,
             border_radius=10,
         )   
 
-        start_date = ft.TextField(
+        self.start_date = ft.TextField(
             label="Start Date",
             width=164,
             border_radius=10,
             hint_text="MM/DD/YYYY"
         )   
 
-        end_date = ft.TextField(
+        self.end_date = ft.TextField(
             label="End Date",
             width=164,
             border_radius=10,
             hint_text="MM/DD/YYYY"
         )   
 
-        quantity_limit = ft.TextField(
+        self.quantity_limit = ft.TextField(
             label="Dispensing Quantity Limit",
             width=400, 
             border_radius=10,
-            hint_text="HH:MM AM/PM"
+            hint_text="Quantity"
         )
 
         def handle_save_prescription(e):
-            # implement prescription saving logic
-            print("Saving prescription...")
-            print(f"Medication: {medication_name.value}")
-            print(f"Dosage: {dosage.value} {dosage_unit.value}")
-            print(f"Frequency: {frequency.value}")
-            print(f"Start Date: {start_date.value}")
-            print(f"End Date: {end_date.value}")
+            # Collect prescription data
+            prescription = {
+                "medication": self.medication_name.value,
+                "dosage": f"{self.dosage.value} {self.dosage_unit.value}",
+                "frequency": self.frequency.value,
+                "doctor": self.doctor_name.value,
+                "start_date": self.start_date.value,
+                "end_date": self.end_date.value,
+                "quantity_limit": self.quantity_limit.value,
+            }
 
-            # add your validation and saving logic here
-            self.toggle_view()
+            # Use prescription manager to save
+            if self.prescription_manager.add_prescription(prescription):
+                # Update prescription list
+                self._update_prescription_list()
+
+                # Clear input fields
+                self._clear_prescription_inputs()
+
+                # Toggle view
+                self.toggle_view()
+            else:
+                # TODO: Add error handling (e.g., show error message)
+                print("Failed to add prescription")
 
         add_prescription_container = ft.Container(
             expand=True,
@@ -230,18 +185,18 @@ class PrescriptionPage:
                     ),
                     ft.Text("Add New Prescription", size=20, weight=ft.FontWeight.BOLD),
                     ft.Container(height=10), # spacer
-                    medication_name,
+                    self.medication_name,
                     ft.Row(
-                        controls=[dosage, dosage_unit],
+                        controls=[self.dosage, self.dosage_unit],
                         alignment=ft.MainAxisAlignment.CENTER,
                     ),
-                    frequency,
+                    self.frequency,
                     ft.Row(
-                        controls=[start_date, end_date],
+                        controls=[self.start_date, self.end_date],
                         alignment=ft.MainAxisAlignment.CENTER,
                     ),
-                    quantity_limit,
-                    doctor_name,
+                    self.quantity_limit,
+                    self.doctor_name,
                     ft.Container(height=20),
                     ft.ElevatedButton(
                         "Save Prescription",
@@ -258,6 +213,86 @@ class PrescriptionPage:
 
         return add_prescription_container
     
+    def _create_prescription_cards(self):
+        """
+        Create prescription cards from stored prescriptions
+        """
+        prescription_cards = []
+        for prescription in self.prescription_manager.get_all_prescriptions():
+            prescription_card = ft.Card(
+                content=ft.Container(
+                    content=ft.Column(
+                        controls=[
+                            ft.ListTile(
+                                leading=ft.Icon(ft.icons.MEDICATION),
+                                title=ft.Text(prescription["medication"]),
+                                ),
+                            ft.Container(
+                                content=ft.Column(
+                                    controls=[
+                                        ft.Text(f"Dosage: {prescription.get('dosage', 'N/A')}", weight=ft.FontWeight.BOLD),
+                                        ft.Text(f"Frequency: {prescription.get('frequency', 'N/A')}", weight=ft.FontWeight.BOLD),
+                                        ft.Text(f"Doctor: {prescription.get('doctor', 'N/A')}", weight=ft.FontWeight.BOLD),
+                                        ft.Text(f"Start Date: {prescription.get('start_date', 'N/A')}", weight=ft.FontWeight.BOLD),
+                                        ft.Text(f"End Date: {prescription.get('end_date', 'N/A')}", weight=ft.FontWeight.BOLD),
+                                        ft.Text(f"Quantity Limit: {prescription.get('quantity_limit', 'N/A')}", weight=ft.FontWeight.BOLD),
+                                    ],
+                                    spacing=5,
+                                    horizontal_alignment=ft.CrossAxisAlignment.START,
+                                ),
+                                padding=ft.padding.only(left=20),
+                            ),
+                            ft.Row(
+                                controls=[
+                                    ft.IconButton(
+                                        icon=ft.icons.EDIT_OUTLINED,
+                                        icon_color="blue50",
+                                        # TODO: Implement edit functionality
+                                    ),
+                                    ft.IconButton(
+                                        icon=ft.icons.DELETE_OUTLINED,
+                                        icon_color="blue50",
+                                        # TODO: Implement delete functionality
+                                    ),
+                                ],
+                                alignment=ft.MainAxisAlignment.END,
+                            ),
+                        ],
+                    ),
+                    padding=10,
+                )
+            )
+            prescription_cards.append(prescription_card)
+        return prescription_cards
+
+    def _update_prescription_list(self):
+        """
+        Update the prescription list view with current prescriptions
+        """
+        if self.prescription_list_view:
+            # Clear existing controls
+            self.prescription_list_view.controls.clear()
+
+            # Add new prescription cards
+            self.prescription_list_view.controls.extend(self._create_prescription_cards())
+
+            # Update the page
+            if self.page:
+                self.page.update()
+
+    def _clear_prescription_inputs(self):
+        """
+        Clear all input fields
+        """
+        self.medication_name.value = ""
+        self.dosage.value = ""
+        self.dosage_unit.value = None
+        self.frequency.value = ""
+        self.doctor_name.value = ""
+        self.start_date.value = ""
+        self.end_date.value = ""
+        self.quantity_limit.value = ""
+
     def toggle_view(self):
         # Toggle between prescription and add prescription views
         if self.current_view == "prescription":
