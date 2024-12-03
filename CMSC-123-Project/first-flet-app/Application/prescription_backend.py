@@ -126,6 +126,6 @@ class PrescriptionManager:
         for prescription in self.prescriptions:
             if prescription['id'] == prescription_id:
                 self.prescriptions.remove(prescription)
-                self.save_prescriptions()
+                self.save_prescription()
                 return True
         return False

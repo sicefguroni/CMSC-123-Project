@@ -88,9 +88,11 @@ def main(page: ft.Page):
         return container
     
     def update_page_content(destination):
-        # Update visibility for all pages
-        prescription_pages[0].visible = destination == "Prescription"
-        prescription_pages[1].visible = destination == "Prescription" and prescription_module.current_view == "add_prescription"
+        # Ensure safe access to prescription pages
+        if len(prescription_pages) >= 2:
+            prescription_pages[0].visible = destination == "Prescription"
+            prescription_pages[1].visible = destination == "Prescription" and prescription_module.current_view == "add_prescription"
+            
         landmark.visible = destination == "Landmark"
         reminder.visible = destination == "Reminder"
         inventory.visible = destination == "Inventory"

@@ -1,30 +1,37 @@
-import datetime
 import flet as ft
 
-
 def main(page: ft.Page):
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    def on_submit(e):
+        if not username.value.strip():
+            username.error_text = "Username cannot be empty!"
+        else:
+            username.error_text = None
+        if len(password.value) < 6:
+            password.error_text = "Password must be at least 6 characters long!"
+        else:
+            password.error_text = None
+        
+        # Update the UI after setting error_text
+        username.update()
+        password.update()
+        
+        # If no errors, show a success message
+        if username.error_text is None and password.error_text is None:
+            page.snack_bar = ft.SnackBar(
+                content=ft.Text("Form submitted successfully!"),
+                open=True
+            )
+            page.update()
 
-    def handle_change(e):
-        page.add(ft.Text(f"Date changed: {e.control.value.strftime('%Y-%m-%d')}"))
+    # TextFields
+    username = ft.TextField(label="Username", width=300)
+    password = ft.TextField(label="Password", password=True, width=300)
 
-    def handle_dismissal(e):
-        page.add(ft.Text(f"DatePicker dismissed"))
+    # Submit Button
+    submit_btn = ft.ElevatedButton("Submit", on_click=on_submit)
 
-    page.add(
-        ft.ElevatedButton(
-            "Pick date",
-            icon=ft.icons.CALENDAR_MONTH,
-            on_click=lambda e: page.open(
-                ft.DatePicker(
-                    first_date=datetime.datetime(year=2023, month=10, day=1),
-                    last_date=datetime.datetime(year=2024, month=10, day=1),
-                    on_change=handle_change,
-                    on_dismiss=handle_dismissal,
-                )
-            ),
-        )
-    )
+    # Add components to the page
+    page.add(username, password, submit_btn)
 
-
+# Start the app
 ft.app(main)

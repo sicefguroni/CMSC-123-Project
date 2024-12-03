@@ -53,5 +53,16 @@
         "quantity_limit": "asg",
         "id": 5,
         "created_at": "2024-12-03T06:05:31.168490"
+    },
+    {
+        "medication": "CEF",
+        "dosage": "CEF ml",
+        "frequency": "CEF",
+        "doctor": "CEF",
+        "start_date": "CEF",
+        "end_date": "CEF",
+        "quantity_limit": "CEF",
+        "id": 6,
+        "created_at": "2024-12-03T12:52:56.570908"
     }
 ]

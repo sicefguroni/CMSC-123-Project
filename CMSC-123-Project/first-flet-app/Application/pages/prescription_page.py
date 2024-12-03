@@ -9,6 +9,9 @@ class PrescriptionPage:
         # Initialize Prescription
         self.prescription_manager = PrescriptionManager()
 
+        # Create prescription list view first
+        self.prescription_list_view = self._create_prescription_list()
+
         # Create main prescription page container
         self.page_container = self._create_prescription_page()
 
@@ -18,7 +21,19 @@ class PrescriptionPage:
         # Current view tracking
         self.current_view = "prescription"
 
-        self.prescription_list_view = None
+    
+    def _create_prescription_list(self):
+        """
+        Create prescription list view from stored prescriptions
+        """
+        # Create list view with prescription cards
+        prescription_list_view = ft.ListView(
+            controls=self._create_prescription_cards(),
+            spacing=10,
+            height=300,
+            expand=True
+        )
+        return prescription_list_view
 
     def _create_prescription_page(self):
 
@@ -46,16 +61,6 @@ class PrescriptionPage:
             divider_color=ft.colors.AMBER,
         )
 
-        # Prescription List Creation
-        def create_prescription_list():
-            self.prescription_list_view = ft.ListView(
-                controls=self._create_prescription_cards(), # Use new method to populate list
-                spacing=10,
-                height=300,
-                expand=True
-            )
-            return self.prescription_list_view
-
         # Main content column
         main_content = ft.Column(
             controls=[
@@ -66,7 +71,7 @@ class PrescriptionPage:
                 ft.Container(
                     content=ft.Column(
                         controls=[
-                            create_prescription_list(),
+                            self.prescription_list_view,
                         ]
                     ),
                     margin=ft.margin.only(left=20, right=20, top=20),
@@ -75,7 +80,7 @@ class PrescriptionPage:
                 ft.Container(
                     content=fab,
                     alignment=ft.alignment.bottom_right,
-                    padding=20,
+                    padding=20, 
                 )
             ],
             scroll=ft.ScrollMode.AUTO,
@@ -92,6 +97,7 @@ class PrescriptionPage:
             label="Medication Name",
             width=400,
             border_radius=10,
+            error_text="Required medication name"
         )
 
         # dosage input
@@ -99,6 +105,7 @@ class PrescriptionPage:
             label="Dosage",
             width=164,
             border_radius=10,
+            error_text="Required dosage"
         )
 
         self.dosage_unit = ft.Dropdown(
@@ -111,40 +118,46 @@ class PrescriptionPage:
                 ft.dropdown.Option("tablet"),
                 ft.dropdown.Option("capsule"),
             ],
+            error_text="Required dosage unit"
         )
 
         self.frequency = ft.TextField(
             label="Frequency",
             width=400,
             border_radius=10,
-            hint_text="e.g., Once daily, Twice a day"
+            hint_text="e.g., Once daily, Twice a day",
+            error_text="Required frequency"
         )
 
         self.doctor_name = ft.TextField(
             label="Doctor's Name",
             width=400,
             border_radius=10,
+            error_text="Required doctor_name"
         )   
 
         self.start_date = ft.TextField(
             label="Start Date",
             width=164,
             border_radius=10,
-            hint_text="MM/DD/YYYY"
+            hint_text="MM/DD/YYYY",
+            error_text="Required start date"
         )   
 
         self.end_date = ft.TextField(
             label="End Date",
             width=164,
             border_radius=10,
-            hint_text="MM/DD/YYYY"
+            hint_text="MM/DD/YYYY",
+            error_text="Required end date"
         )   
 
         self.quantity_limit = ft.TextField(
             label="Dispensing Quantity Limit",
             width=400, 
             border_radius=10,
-            hint_text="Quantity"
+            hint_text="Quantity",
+            error_text="Required quantity",
         )
 
         def handle_save_prescription(e):
@@ -242,20 +255,17 @@ class PrescriptionPage:
                                 ),
                                 padding=ft.padding.only(left=20),
                             ),
-                            ft.Row(
-                                controls=[
-                                    ft.IconButton(
-                                        icon=ft.icons.EDIT_OUTLINED,
-                                        icon_color="blue50",
-                                        # TODO: Implement edit functionality
-                                    ),
-                                    ft.IconButton(
-                                        icon=ft.icons.DELETE_OUTLINED,
-                                        icon_color="blue50",
-                                        # TODO: Implement delete functionality
-                                    ),
-                                ],
-                                alignment=ft.MainAxisAlignment.END,
+                            ft.ListTile(
+                                leading=ft.IconButton(
+                                    icon=ft.icons.EDIT_OUTLINED,
+                                    icon_color="blue50",
+                                    # TODO: Implement edit functionality
+                                ),
+                                trailing=ft.IconButton(
+                                    icon=ft.icons.DELETE_OUTLINED,
+                                    icon_color="blue50"
+                                    # TODO: Implement delete functionality
+                                ),
                             ),
                         ],
                     ),
@@ -310,5 +320,7 @@ class PrescriptionPage:
     
     def get_pages(self):
         # Return both page containers for use in main app
-        return [self.page_container, self.add_prescription_container]
+        return [self.page_container, self.add_prescription_container]   
+    
+    
 
