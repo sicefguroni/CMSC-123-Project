@@ -1,68 +1,39 @@
 [
     {
-        "medication": "rw",
-        "dosage": "we ml",
-        "frequency": "we",
-        "doctor": "wer",
-        "start_date": "wer",
-        "end_date": "we",
-        "quantity_limit": "wer",
+        "medication": "Cef",
+        "dosage": "12 mg",
+        "frequency": "123",
+        "time_interval": "123",
+        "doctor": "123",
+        "start_date": "123",
+        "end_date": "123",
+        "quantity_limit": "123",
         "id": 1,
-        "created_at": "2024-12-03T05:47:38.134139"
+        "created_at": "2024-12-03T16:35:42.384412"
     },
     {
-        "medication": "dfn",
-        "dosage": "dfn mcg",
-        "frequency": "df",
-        "doctor": "dndf",
-        "start_date": "dfnd",
-        "end_date": "fn",
-        "quantity_limit": "dvd",
+        "medication": "Jum",
+        "dosage": "123 mcg",
+        "frequency": "123",
+        "time_interval": "33",
+        "doctor": "33",
+        "start_date": "123",
+        "end_date": "33",
+        "quantity_limit": "33",
         "id": 2,
-        "created_at": "2024-12-03T05:48:04.545035"
+        "created_at": "2024-12-03T16:35:54.134648"
     },
     {
-        "medication": "dfn",
-        "dosage": "dfn mcg",
-        "frequency": "dfnd",
-        "doctor": "fndfn",
-        "start_date": "fn",
-        "end_date": "dfnd",
-        "quantity_limit": "fnd",
+        "medication": "San",
+        "dosage": "123 ml",
+        "frequency": "123",
+        "time_interval": "123",
+        "doctor": "124",
+        "start_date": "123",
+        "end_date": "123",
+        "quantity_limit": "123",
         "id": 3,
-        "created_at": "2024-12-03T05:48:11.368685"
-    },
-    {
-        "medication": "Paracetamol",
-        "dosage": "50 mcg",
-        "frequency": "Once",
-        "doctor": "42",
-        "start_date": "11/20/224",
-        "end_date": "242",
-        "quantity_limit": "42",
-        "id": 4,
-        "created_at": "2024-12-03T06:04:40.029636"
-    },
-    {
-        "medication": "aga",
-        "dosage": "asg mcg",
-        "frequency": "asg",
-        "doctor": "ag",
-        "start_date": "ags",
-        "end_date": "asg",
-        "quantity_limit": "asg",
-        "id": 5,
-        "created_at": "2024-12-03T06:05:31.168490"
-    },
-    {
-        "medication": "CEF",
-        "dosage": "CEF ml",
-        "frequency": "CEF",
-        "doctor": "CEF",
-        "start_date": "CEF",
-        "end_date": "CEF",
-        "quantity_limit": "CEF",
-        "id": 6,
-        "created_at": "2024-12-03T12:52:56.570908"
+        "created_at": "2024-12-03T16:44:27.096545",
+        "updated at": "2024-12-03T16:44:39.087799"
     }
 ]
