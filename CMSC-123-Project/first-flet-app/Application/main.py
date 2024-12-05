@@ -26,6 +26,7 @@ def main(page: ft.Page):
         leading=ft.Image(src="Medion-Logo.png", width=32, height=32),
         leading_width=50,
         title=ft.Text("Medion: Prescription"),
+        title_spacing=0.0,
         center_title=False,
         bgcolor=ft.colors.SURFACE_VARIANT,
         actions=[
@@ -43,6 +44,7 @@ def main(page: ft.Page):
             leading=ft.Image(src="Medion-Logo.png", width=32, height=32),
             leading_width=50,
             title=ft.Text(f"Medion: {selected_icon}"),
+            title_spacing=0.0,
             center_title=False,
             bgcolor=ft.colors.SURFACE_VARIANT,
             actions=[
@@ -110,7 +112,7 @@ def main(page: ft.Page):
         # update all icons' appearances
         for icon in navigation_row.controls:
             if icon.data == destination:
-                icon.bgcolor = ft.colors.LIGHT_BLUE
+                icon.bgcolor = ft.colors.BLUE_50
                 icon.content.src = f"{icon.data}-Selected.png"
             else:
                 icon.bgcolor = ft.colors.TRANSPARENT

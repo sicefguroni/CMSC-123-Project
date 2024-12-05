@@ -436,12 +436,12 @@ class PrescriptionPage:
                                 ft.ListTile(
                                     leading=ft.IconButton(
                                         icon=ft.icons.EDIT_OUTLINED,
-                                        icon_color="blue50",
+                                        icon_color="black",
                                         on_click=lambda e, p=prescription: self.start_edit_prescription(p)
                                     ),
                                     trailing=ft.IconButton(
                                         icon=ft.icons.DELETE_OUTLINED,
-                                        icon_color="blue50",
+                                        icon_color="black",
                                         on_click=lambda e, p=prescription: self.delete_prescription(p)
                                     ),
                                 ),
@@ -568,7 +568,7 @@ class PrescriptionPage:
 
         # search bar
         anchor = ft.SearchBar(
-            width=400,
+            width=340,
             view_elevation=4,
             bar_hint_text="Search prescriptions...",
             divider_color=ft.colors.AMBER,
