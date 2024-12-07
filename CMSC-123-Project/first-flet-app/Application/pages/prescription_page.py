@@ -448,7 +448,9 @@ class PrescriptionPage:
                             ],
                         ),
                         padding=10,
-                    )
+                    ),
+                    elevation=2,
+                    width=350
                 )
                 prescription_cards.append(prescription_card)
             return prescription_cards
@@ -575,34 +577,56 @@ class PrescriptionPage:
             on_change=on_search_change
         )
 
-        # Main content column
-        main_content = ft.Column(
-            controls=[
-                ft.Container(
-                    content=anchor,
-                    margin=ft.margin.only(left=20, top=10, bottom=10)
-                ),
-                ft.Container(
-                    content=ft.Column(
-                        controls=[
-                            self.prescription_list_view,
-                        ]
-                    ),
-                    margin=ft.margin.only(left=20, right=20, top=20),
-                    expand=True,
-                ),
-                ft.Container(
-                    content=fab,
-                    alignment=ft.alignment.bottom_right,
-                    padding=20, 
-                )
-            ],
-            scroll=ft.ScrollMode.AUTO,
-            expand=True,
-            spacing=0,
+        # Scrollable results
+        results_container = ft.Container(
+            content=ft.Column(
+                controls=[self.prescription_list_view],
+                scroll=ft.ScrollMode.AUTO,
+                expand=True
+            ),
+            padding=10,
+            expand=True
         )
 
-        page_container.content = main_content
+        # Main container
+        prescription_container = ft.Container(
+            content=ft.Column(
+                controls=[
+                    ft.Container(
+                        content=ft.Column([
+                            ft.Text("Prescriptions", size=24, weight=ft.FontWeight.BOLD),
+                            anchor,
+                            ft.Divider(height=10)
+                        ],
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=10),
+                        padding=20
+                    ),
+                    results_container
+                ],
+                spacing=0,
+                expand=True
+            ),
+            expand=True,
+        )
+
+        fab_container = ft.Container(
+            content=fab,
+            alignment=ft.alignment.bottom_right,
+            right=20,
+            bottom=20,
+            padding=10
+        )
+
+        # Overlay FAB
+        page_container.content = ft.Stack(
+            controls=[
+                prescription_container,
+                fab_container
+            ],
+            expand=True
+        )
+
         return page_container
 
     def _update_prescription_list(self):
@@ -659,6 +683,3 @@ class PrescriptionPage:
                 self.add_prescription_container,
                 self.edit_prescription_container
         ]   
-    
-    
-
