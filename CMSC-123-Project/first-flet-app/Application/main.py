@@ -4,6 +4,12 @@ from pages.landmark_page import landmark_page
 from pages.reminder_page import Reminder_Page # <ISA NEW>
 from pages.inventory_page import inventory_page
 
+##---------------------------------------------------------------------------------------------------##
+#   Note to CEF:
+#       Yo, click CTRL + F and type for "ISA NEW". Kana lang i-add sa very very main file XD
+##---------------------------------------------------------------------------------------------------##
+
+
 def main(page: ft.Page):
     # Set up the page
     page.window_width = 414
