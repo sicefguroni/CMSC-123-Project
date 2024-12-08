@@ -1,6 +1,6 @@
 import flet as ft
 from pages.prescription_page import PrescriptionPage
-from pages.landmark_page import landmark_page
+from pages.pharmacy_finder_page import pharmacy_finder_page
 from pages.reminder_page import Reminder_Page # <ISA NEW>
 from pages.inventory_page import inventory_page
 
@@ -23,7 +23,7 @@ def main(page: ft.Page):
     prescription_pages = prescription_module.get_pages()
 
     # Load other pages
-    landmark = landmark_page()
+    pharmacy_finder = pharmacy_finder_page()
     reminder_instance = Reminder_Page(page)  # Create an instance of Reminder_Page <ISA NEW>
     reminder = reminder_instance.page_container  # Access its container <ISA NEW>
     inventory = inventory_page()
@@ -115,7 +115,7 @@ def main(page: ft.Page):
         # Update visibility for all pages
         prescription_pages[0].visible = destination == "Prescription"
         prescription_pages[1].visible = destination == "Prescription" and prescription_module.current_view == "add_prescription"
-        landmark.visible = destination == "Landmark"
+        pharmacy_finder.visible = destination == "Pharmacy Finder"
         reminder.visible = destination == "Reminder"
         inventory.visible = destination == "Inventory"
 
@@ -137,7 +137,7 @@ def main(page: ft.Page):
     navigation_row = ft.Row(
         [
             create_custom_icon("Prescription-Default.png", "Prescription-Selected.png", "Prescription", "Prescription"),
-            create_custom_icon("Landmark-Default.png", "Landmark-Selected.png", "Landmark", "Landmark"),
+            create_custom_icon("Pharmacy Finder-Default.png", "Pharmacy Finder-Selected.png", "Pharmacy Finder", "Pharmacy Finder"),
             create_custom_icon("Reminder-Default.png", "Reminder-Selected.png", "Reminder", "Reminder"),
             create_custom_icon("Inventory-Default.png", "Inventory-Selected.png", "Inventory", "Inventory"),
         ],
@@ -150,7 +150,7 @@ def main(page: ft.Page):
     )
 
     content_area = ft.Container(
-        content=ft.Stack(prescription_pages + [landmark, reminder, inventory]),
+        content=ft.Stack(prescription_pages + [pharmacy_finder, reminder, inventory]),
         expand=True,
         padding=ft.padding.only(top=10),
     )

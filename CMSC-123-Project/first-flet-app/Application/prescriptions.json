@@ -1,18 +1,15 @@
 [
     {
-        "medication": "asdasd",
-        "dosage": "sad ml",
-        "frequency": "asd",
+        "medication": "saf",
+        "dosage": "25 tablet",
+        "frequency": "sd",
         "time_interval": "sd",
         "doctor": "asd",
-        "start_date": "asd",
+        "start_date": "asf",
         "end_date": "asd",
         "quantity_limit": "asd",
         "id": 1,
-<<<<<<< Updated upstream
-        "created_at": "2024-12-07T10:15:15.667108"
-=======
-        "created_at": "2024-12-07T13:33:05.600068"
->>>>>>> Stashed changes
+        "created_at": "2024-12-08T10:43:32.927400",
+        "updated at": "2024-12-08T10:43:44.753347"
     }
 ]

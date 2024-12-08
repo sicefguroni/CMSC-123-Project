@@ -1,11 +1,12 @@
 import flet as ft
 from pharmacies_db import pharmacies
 
-class LandmarkPage:
+class PharmacyFinderPage:
     def __init__(self, page: ft.Page):
         # Expanded pharmacy database with more details
         self.pharmacies = pharmacies
         self.page = page
+        self.container = self.pharmacy_finder_page()
     
     def search_pharmacies(self, search_term):
         """Find pharmacies based on flexible search term"""
@@ -53,7 +54,7 @@ class LandmarkPage:
             width=360
         )
     
-    def landmark_page(self):
+    def pharmacy_finder_page(self):
         # Pharmacies list 
         pharmacies_container = ft.Column(spacing=10)
         
@@ -99,7 +100,7 @@ class LandmarkPage:
         )
         
         # Main container
-        landmark_container = ft.Container(
+        pharmacy_finder_container = ft.Container(
             content=ft.Column(
                 controls=[
                     ft.Container(
@@ -120,9 +121,9 @@ class LandmarkPage:
             visible=False
         )
         
-        return landmark_container
+        return pharmacy_finder_container
 
 # Usage in main app
-def landmark_page():
-    landmark = LandmarkPage(ft.Page)
-    return landmark.landmark_page()
+def pharmacy_finder_page():
+    pharmacy_finder = PharmacyFinderPage(ft.Page)
+    return pharmacy_finder.pharmacy_finder_page()

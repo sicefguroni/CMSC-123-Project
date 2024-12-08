@@ -418,7 +418,7 @@ class PrescriptionPage:
                                     ft.Text(f"End Date: {p.get('end_date', 'N/A')}", size=17),
                                     ft.Text(f"Quantity Limit: {p.get('quantity_limit', 'N/A')}", size=17),
                                 ],
-                                spacing=20,
+                                spacing=25,
                             ),
                             actions=[
                                 ft.TextButton("Close", on_click=handle_dialog_action('close')),
