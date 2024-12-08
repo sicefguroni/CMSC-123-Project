@@ -109,8 +109,94 @@ def inventory_page():
         "Leflunomide- ": [10, 20, 100],
         "Lenalidomide- ": [2.5, 5, 7.5, 10, 15, 20, 25],
         "Letrozole- ": [2.5],
+        "Losartan potassium- ": [12.5, 25, 50, 100],
+        "Loratadine- ": [5, 10],
+        "Mebendazole- ": [20, 50, 100],
+        "Mefenamic Acid- ":[250, 500],
+        "Megestrol acetate- ": [125, 160],
+        "Meloxicam- ": [7.5, 15],
+        "Mercaptopurine- ": [50],
+        "Mesalazine- ": [250, 500],
+        "Metformin hydrochloride- ": [500, 750, 850],
+        "Methyldopa- ": [250, 500],
+        "Mirtazapine- ": [15, 30, 45],
+        "Modafinil- ":[100, 200],
+        "Naproxen- ":[25, 375, 500],
+        "Nateglinide- ":[120],
+        "Nevirapine- ": [50, 100, 200, 400],
+        "Nifedipine- ": [30, 60, 90],
+        "Nifuroxazide- ": [200],
+        "Nimodipine- ": [30],
+        "Nitrofurantoin- ": [25, 50, 100],
+        "Norfloxacin- ": [200, 400],
+        "Ofloxacin- ": [200, 300, 400],
+        "Olanzapine- ": [2.5, 5, 7.5, 10, 15, 20],
+        "Olmesartan medoxomil- ": [5, 10, 20, 40],
+        "Omeprazole- ": [10, 20, 40],
+        "Ondansetron- ": [4, 8, 24],
+        "Orlistat- ": [120],
+        "Oxcarbazepine- ": [ 60, 150, 300, 600],
+        "Oxycodone- ": [9, 13.5, 18, 27, 36], 
+        "Paliperidone- ": [1.5, 3, 6, 9],
+        "Paracetamol- ": [100, 120, 250, 325, 500], 
+        "Pentoxifylline- ": [400],
+        "Perampanel- ": [2, 4, 6, 8, 10, 12],
+        "Piracetam- ": [800],
+        "Piroxicam- ": [10, 20],
+        "Posaconazole- ": [40, 100],
+        "Pravastatin sodium- ": [20, 40, 80], 
+        "Pyrantel embonate- ": [125, 250], 
+        "Quetiapine- ": [25, 50, 100, 200, 300, 400],
+        "Quinapril- ": [5, 10, 20, 40],
+        "Quinine sulfate- ": [300, 324],
+        "Rabeprazole Sodium- ": [5, 10, 20],
+        "Raloxifene hydrochloride- ": [60],
+        "Raltegravir- ": [25, 400, 600],
+        "Ramelteon- ": [8],
+        "Ramipril- ": [1.25, 2.5, 5, 10],
+        "Ranitidine Hydrochloride- ": [75, 150, 300],
+        "Ranolazine- ": [375, 500, 750, 1000],
+        "Rebamipide- ": [100],
+        "Regorafenib- ": [40],
+        "Retigabine- ": [50, 100, 200, 300, 400],
+        "Salbutamol Sulfate- ": [2],
+        "Saxagliptin Hydrochloride- ": [2.5, 5],
+        "Selegiline Hydrochloride- ": [1.25, 5, 10],
+        "Sevelamer carbonate- ": [800],
+        "Silodosin- ": [4, 8],
+        "Simvastastin- ": [5, 10, 20, 40, 80],
+        "Sirolimus- ": [1, 2],
+        "Sofosbuvir- ": [400],
+        "Spironolactone- ": [25, 50, 100],
+        "Sulbutiamine- ": [200],
+        "Tadalafil- ": [2.5, 5, 10, 20],
+        "Tamoxifen Citrate- ": [10, 20, 40],
+        "Tapentadol hydrochloride- ": [50, 75, 100],
+        "Tedizolid Phosphate- ": [200],
+        "Telmisartan- ": [20, 40, 80],
+        "Temozolomide- ": [5, 20, 100, 140, 180, 250],
+        "Tenofovir disoproxil fumarate- ": [200, 250, 300],
+        "Tenoxicam- ": [20],
+        "Terbutaline Sulfate- ": [2.5, 5],
+        "Thalidomide- ": [50, 100, 150, 200],
+        "Ulipristal Acetate- ": [5, 30],
+        "Ursodeoxycholic Acid- ":[150, 250, 300, 500],
+        "Valaciclovir Hydrochloride- ": [250, 500, 1000],
+        "Valsartan- ": [40, 80, 160, 320],
+        "Vardenafil Hydrochloride- ": [2.5, 5, 10, 20],
+        "Vemurafenib- ": [240],
+        "Verapamil Hydrochloride- ": [40, 80, 120],
+        "Vildagliptin- ": [50],
+        "Vinorelbine Tartrate- ": [20, 30, 80],
+        "Vismodegib- ": [150],
+        "Voriconazole- ": [50, 200],
+        "Vortioxetine Hydrobromide- ": [5, 10, 15, 20],
+        "Warfarin sodium- ": [1, 2, 2.5, 3, 4, 5, 6, 7.5, 10],
+        "Zolmitriptan- ": [2.5, 5],
+        "Zolpidem Tartrate- ": [5, 10],
+        "Zonisamide- ": [25, 50, 100],
     }
-
+    
     # Extract generic names for validation
     generic_names = {key.split('-')[0].strip(): key for key in valid_a_medications}
 
@@ -275,40 +361,109 @@ def inventory_page():
 
     # Predefined valid fluid medications with valid dosages
     valid_fluid_medications = {
-        "Oral Rehydration Solution": [100, 200, 500],
-        "Cough Syrup": [5, 10, 15],
-        "Antibiotic Suspension": [50, 100],
+        "Aciclovir- ": [5], 
+        "Albendazole- ": [5], 
+        "Amoxicillin- ": [5, 0.01],
+        "Azithromycin- ": [5],
+        "Azithromycin monohydrate- ": [5],
+        "Carbamazepine- ": [5],
+        "Carbocisteine- ": [5],
+        "Cefaclor- ": [5, 0.05],
+        "Cefadroxil- ":[5], 
+        "Cefalexin- ": [5, 0.1],
+        "Cefdinir- ": [5],
+        "Cefixime- ": [5, 0.02],
+        "Cefpodoxime proxetil- ": [5], 
+        "Cefradine- ": [5],
+        "Ceftibuten- ": [5],
+        "Dasatinib- ": [10],
+        "Diloxanide- ": [5],
+        "Domperidone- ":[1, 5],
+        "Doxycycline- ":[5],
+        "Erdosteine- ": [5],
+        "Erythromycin estolate- ": [5, 0.1], 
+        "Erythromycin ethylsuccinate- ":[5],
+        "Famotidine- ": [5],
+        "Fexofenadine hydrochloride- ": [5],
+        "Flucloxacillin- ":[5],
+        "Fluconazole- ": [5, 0.01, 0.04], 
+        "Furazolidone- ": [15],
+        "Ibuprofen- ": [2.5, 5],
+        "Linezolid- ": [5],
+        "Mebendazole- ": [5, 0.02, 0.05],
+        "Megestrol acetate- ": [0.125],
+        "Methylphenidate hydrochloride- ":[5],
+        "Metronidazole- ": [5, 0.025],
+        "Mycophenolate mofetil- ": [0.2],
+        "Naproxen- ": [0.025],
+        "Nevirapine- ": [5],
+        "Oseltamivir- ": [6, 12],
+        "Oxcarbazepine- ": [0.06], 
+        "Paracetamol- ": [0.1, 5],
+        "Paroxetine- ": [5, 10],
+        "Perampanel- ": [0.5],
+        "Phenytoin sodium- ": [5],
+        "Posaconazole- ": [0.04],
+        "Prednisolone- ": [5],
+        "Pyrantel embonate- ": [5],
+        "Pyrazinamide- ": [5],
+        "Rifampicin- ": [5],
+        "Rufinamide- ": [0.04],
+        "Simvastatin- ": [5],
+        "Sucralfate- ": [5, 10],
+        "Sultamicillin tosilate- ": [5],
+        "Ursodeoxycholic Acid- ": [5],
+        "Voriconazole- ": [0.04, 5],
+
     }
 
-    # Global inventory for fluid medications
-    fluid_inventory = []
+    # Extract generic names for validation
+    fluid_generic_names = {key.split('-')[0].strip(): key for key in valid_fluid_medications}
 
     def validate_fluid_name(e):
         name = fluid_name_input.value.strip()
-        if name not in valid_fluid_medications:
-            fluid_name_input.error_text = "Invalid medication name! Please select a valid name."
-            fluid_dosage_input.disabled = True  # Disable dosage input if name is invalid
+
+        # Ensure the entered name matches a key in the `fluid_generic_names`
+        if name not in fluid_generic_names:
+            fluid_name_input.error_text = "Invalid fluid medication name!"
         else:
             fluid_name_input.error_text = None
-            fluid_dosage_input.disabled = False  # Enable dosage input for valid names
         fluid_name_input.update()
-        fluid_dosage_input.update()
 
     def validate_fluid_dosage(e):
+        # Retrieve and clean the input values
         name = fluid_name_input.value.strip()
         dosage = fluid_dosage_input.value.strip()
 
-        if name not in valid_fluid_medications:
-            fluid_dosage_input.error_text = "Invalid medication name! Please select a valid name."
+        # Map the generic name to the full key in `valid_fluid_medications`
+        if name in fluid_generic_names:
+            full_name = fluid_generic_names[name]
+        else:
+            fluid_name_input.error_text = "Invalid medication name! Please select a valid name."
+            fluid_name_input.update()
+            return
+
+        # Validate the dosage input
+        if not dosage.isdigit():
+            fluid_dosage_input.error_text = "Dosage must be numeric!"
             fluid_dosage_input.update()
             return
 
-        valid_dosages = valid_fluid_medications[name]
-        if not dosage.isdigit() or int(dosage) not in valid_dosages:
-            fluid_dosage_input.error_text = f"Invalid dosage! Valid dosages for {name}: {', '.join(map(str, valid_dosages))}mL."
+        # Convert the dosage input to a number
+        dosage = int(dosage)
+
+        # Retrieve valid dosages for the selected medication
+        valid_dosages = valid_fluid_medications[full_name]
+
+        # Check if the input dosage matches the valid dosage list
+        if dosage not in valid_dosages:
+            fluid_dosage_input.error_text = f"Invalid dosage! Valid dosages for {name}: {', '.join(map(str, valid_dosages))} mL."
         else:
-            fluid_dosage_input.error_text = None
+            fluid_dosage_input.error_text = None  # Clear the error if valid
+
+        # Update the UI component with the error or clear it
         fluid_dosage_input.update()
+
 
     def validate_fluid_stock(e):
         dosage = fluid_dosage_input.value.strip()
@@ -316,10 +471,11 @@ def inventory_page():
 
         if not stock.isdigit():
             fluid_stock_input.error_text = "Stock must be numeric!"
-        elif dosage.isdigit() and int(dosage) >= int(stock):
+        elif dosage.replace('.', '', 1).isdigit() and float(dosage) >= int(stock):
             fluid_stock_input.error_text = "Stock must be greater than dosage!"
         else:
             fluid_stock_input.error_text = None
+
         fluid_stock_input.update()
 
     def add_fluid_item(e):
