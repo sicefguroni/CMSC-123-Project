@@ -152,7 +152,7 @@ def main(page: ft.Page):
     content_area = ft.Container(
         content=ft.Stack(prescription_pages + [pharmacy_finder, reminder, inventory]),
         expand=True,
-        padding=ft.padding.only(top=10),
+      
     )
 
     main_column = ft.Column(

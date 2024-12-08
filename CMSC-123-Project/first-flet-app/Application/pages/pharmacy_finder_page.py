@@ -79,7 +79,7 @@ class PharmacyFinderPage:
                                             ft.Text(f"Distance: {pharmacy['distance']}", size=17),
                                         ]),
                                     ],
-                                    spacing=20,)
+                                    spacing=17,)
                                 ],
                                 scroll=ft.ScrollMode.AUTO),
                         
@@ -175,7 +175,7 @@ class PharmacyFinderPage:
         search_button = ft.SearchBar(
             bar_hint_text="Search Pharmacies", 
             on_change=search_pharmacies,
-            width=350
+            width=360
         )
         
         # Main container
@@ -184,12 +184,10 @@ class PharmacyFinderPage:
                 controls=[
                     ft.Container(
                         content=ft.Column([
-                            ft.Text("Pharmacy Finder", size=24, weight=ft.FontWeight.BOLD),
                             search_button,
                         ],
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        spacing=10),
-                        padding=20
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                        padding=10
                     ),
                     results_container
                 ],

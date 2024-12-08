@@ -37,13 +37,13 @@ class PrescriptionPage:
         # dosage input
         self.dosage = ft.TextField(
             label="Dosage",
-            width=164,
+            width=173,
             border_radius=10,
         )
 
         self.dosage_unit = ft.Dropdown(
             label="Dosage Unit",
-            width=164,
+            width=173,
             options=[
                 ft.dropdown.Option("mg"),
                 ft.dropdown.Option("ml"),
@@ -55,14 +55,14 @@ class PrescriptionPage:
 
         self.frequency = ft.TextField(
             label="Frequency",
-            width=164,
+            width=173,
             border_radius=10,
             hint_text="e.g., Once daily",
         )
 
         self.time_interval = ft.TextField(
             label="Time Interval",
-            width=164,
+            width=173,
             border_radius=10,
             hint_text="e.g., 6 hours",
         )
@@ -75,17 +75,31 @@ class PrescriptionPage:
 
         self.start_date = ft.TextField(
             label="Start Date",
-            width=164,
+            width=173,
             border_radius=10,
             hint_text="MM/DD/YYYY",
         )   
 
         self.end_date = ft.TextField(
             label="End Date",
-            width=164,
+            width=173,
             border_radius=10,
             hint_text="MM/DD/YYYY",
         )   
+
+        self.appointment_date= ft.TextField(
+            label="Appointment Date",
+            width=173,
+            border_radius=10,
+            hint_text="MM/DD/YYYY",
+        )
+
+        self.appointment_time= ft.TextField(
+            label="Appointment Time",
+            width=173,
+            border_radius=10,
+            hint_text="HH:MM",
+        )
 
         self.quantity_limit = ft.TextField(
             label="Dispensing Quantity Limit",
@@ -104,6 +118,8 @@ class PrescriptionPage:
                 self.doctor_name,
                 self.start_date,
                 self.end_date,
+                self.appointment_date,
+                self.appointment_time,
                 self.quantity_limit,
             ]
 
@@ -117,6 +133,8 @@ class PrescriptionPage:
                     "doctor": self.doctor_name.value,
                     "start_date": self.start_date.value,
                     "end_date": self.end_date.value,
+                    "appointment_date": self.appointment_date.value,
+                    "appointment_time": self.appointment_time.value,
                     "quantity_limit": self.quantity_limit.value,
                 }
 
@@ -163,7 +181,7 @@ class PrescriptionPage:
                         alignment=ft.MainAxisAlignment.END,
                     ),
                     ft.Text("Add New Prescription", size=20, weight=ft.FontWeight.BOLD),
-                    ft.Container(height=10), # spacer
+                    ft.Container(height=5), # spacer
                     self.medication_name,
                     ft.Row(
                         controls=[self.dosage, self.dosage_unit],
@@ -179,7 +197,11 @@ class PrescriptionPage:
                     ),
                     self.quantity_limit,
                     self.doctor_name,
-                    ft.Container(height=20),
+                    ft.Row(
+                        controls=[self.appointment_date, self.appointment_time],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                    ),
+                    ft.Container(height=15),
                     ft.ElevatedButton(
                         "Save Prescription",
                         on_click=handle_save_prescription,
@@ -191,7 +213,7 @@ class PrescriptionPage:
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=10,
             ),
-            padding=20,
+            padding=10,
             alignment=ft.alignment.center,
         )
 
@@ -208,13 +230,13 @@ class PrescriptionPage:
         # dosage input
         self.edit_dosage = ft.TextField(
             label="Dosage",
-            width=164,
+            width=173,
             border_radius=10
         )
 
         self.edit_dosage_unit = ft.Dropdown(
             label="Dosage Unit",
-            width=164,
+            width=173,
             options=[
                 ft.dropdown.Option("mg"),
                 ft.dropdown.Option("ml"),
@@ -226,14 +248,14 @@ class PrescriptionPage:
 
         self.edit_frequency = ft.TextField(
             label="Frequency",
-            width=164,
+            width=173,
             border_radius=10,
             hint_text="e.g., Once daily"
         )
 
         self.edit_time_interval = ft.TextField(
             label="Time Interval",
-            width=164,
+            width=173,
             border_radius=10,
             hint_text="e.g., 6 hours"
         )
@@ -246,17 +268,31 @@ class PrescriptionPage:
 
         self.edit_start_date = ft.TextField(
             label="Start Date",
-            width=164,
+            width=173,
             border_radius=10,
             hint_text="MM/DD/YYYY"
         )   
 
         self.edit_end_date = ft.TextField(
             label="End Date",
-            width=164,
+            width=173,
             border_radius=10,
             hint_text="MM/DD/YYYY"
         )   
+
+        self.edit_appointment_date = ft.TextField(
+            label="Appointment Date",
+            width=173,
+            border_radius=10,
+            hint_text="MM/DD/YYYY"
+        )
+
+        self.edit_appointment_time = ft.TextField(
+            label="Appointment Time",
+            width=173,
+            border_radius=10,
+            hint_text="HH:MM"
+        )
 
         self.edit_quantity_limit = ft.TextField(
             label="Dispensing Quantity Limit",
@@ -275,6 +311,8 @@ class PrescriptionPage:
                 self.edit_doctor_name,
                 self.edit_start_date,
                 self.edit_end_date,
+                self.edit_appointment_date,
+                self.edit_appointment_time,
                 self.edit_quantity_limit
             ]
 
@@ -293,6 +331,8 @@ class PrescriptionPage:
                     "doctor": self.edit_doctor_name.value,
                     "start_date": self.edit_start_date.value,
                     "end_date": self.edit_end_date.value,
+                    "appointment_date": self.edit_appointment_date.value,
+                    "appointment_time": self.edit_appointment_time.value,
                     "quantity_limit": self.edit_quantity_limit.value,
                 }
 
@@ -337,7 +377,7 @@ class PrescriptionPage:
                         alignment=ft.MainAxisAlignment.END,
                     ),
                     ft.Text("Edit Prescription", size=20, weight=ft.FontWeight.BOLD),
-                    ft.Container(height=10), # spacer
+                    ft.Container(height=5), # spacer
                     self.edit_medication_name,
                     ft.Row(
                         controls=[self.edit_dosage, self.edit_dosage_unit],
@@ -353,7 +393,11 @@ class PrescriptionPage:
                     ),
                     self.edit_quantity_limit,
                     self.edit_doctor_name,
-                    ft.Container(height=20),
+                    ft.Row(
+                        controls=[self.edit_appointment_date, self.edit_appointment_time],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                    ),
+                    ft.Container(height=15),
                     ft.ElevatedButton(
                         "Save Changes",
                         on_click=handle_save_edit,
@@ -365,7 +409,7 @@ class PrescriptionPage:
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=10,
             ),
-            padding=20,
+            padding=10,
             alignment=ft.alignment.center,
         )
 
@@ -405,16 +449,16 @@ class PrescriptionPage:
                             return _action
 
                         dlg = ft.AlertDialog(
-                            icon=ft.Icon(name=ft.icons.MEDICATION),
+                            icon=ft.Icon(name=ft.icons.MEDICATION, size=30),
                             title=ft.Text(p["medication"], weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
                             content=ft.Container(
                                 ft.Column(
                                     controls=[
-                                        ft.Text(f""),
                                         ft.Text(f"Dosage: {p.get('dosage', 'N/A')}", size=17),
                                         ft.Text(f"Frequency: {p.get('frequency', 'N/A')}", size=17),
                                         ft.Text(f"Time Interval: {p.get('time_interval', 'N/A')}", size=17),
                                         ft.Text(f"Doctor: {p.get('doctor', 'N/A')}", size=17),
+                                        ft.Text(f"Next Appointment: {p.get('appointment_date', 'N/A')} - {p.get('appointment_time', 'N/A')}", size=17),
                                         ft.Text(f"Start Date: {p.get('start_date', 'N/A')}", size=17),
                                         ft.Text(f"End Date: {p.get('end_date', 'N/A')}", size=17),
                                         ft.Text(f"Quantity Limit: {p.get('quantity_limit', 'N/A')}", size=17),
@@ -422,7 +466,7 @@ class PrescriptionPage:
                                     spacing=25,
                                 ),
                                 width=350,
-                                height=400,
+                                height=330,
                             ),
                             actions=[
                                 ft.TextButton("Close", on_click=handle_dialog_action('close')),
@@ -481,6 +525,8 @@ class PrescriptionPage:
         self.edit_frequency.value = prescription.get('frequency', '')
         self.edit_time_interval.value = prescription.get('time_interval', '')
         self.edit_doctor_name.value = prescription.get('doctor', '')
+        self.edit_appointment_date.value = prescription.get('appointment_date', '')
+        self.edit_appointment_time.value = prescription.get('appointment_time', '')
         self.edit_start_date.value = prescription.get('start_date', '')
         self.edit_end_date.value = prescription.get('end_date', '')
         self.edit_quantity_limit.value = prescription.get('quantity_limit', '')
@@ -517,6 +563,8 @@ class PrescriptionPage:
         self.edit_frequency.value = ""
         self.edit_time_interval.value = ""
         self.edit_doctor_name.value = ""
+        self.edit_appointment_date.value = ""
+        self.edit_appointment_time.value = ""
         self.edit_start_date.value = ""
         self.edit_end_date.value = ""
         self.edit_quantity_limit.value = ""
@@ -584,7 +632,7 @@ class PrescriptionPage:
 
         # search bar
         anchor = ft.SearchBar(
-            width=340,
+            width=360,
             view_elevation=4,
             bar_hint_text="Search Prescriptions",
             divider_color=ft.colors.AMBER,
@@ -599,9 +647,9 @@ class PrescriptionPage:
 
         # Scrollable results
         results_container = ft.Container(
-        content=self.prescription_list_view,  # Directly use the ListView
-        padding=10,
-        expand=True
+            content=self.prescription_list_view,  # Directly use the ListView
+            padding=10,
+            expand=True
         )
 
         # Main container
@@ -610,12 +658,10 @@ class PrescriptionPage:
                 controls=[
                     ft.Container(
                         content=ft.Column([
-                            ft.Text("Prescriptions", size=24, weight=ft.FontWeight.BOLD),
                             anchor,
                         ],
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        spacing=10),
-                        padding=20
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                        padding=10
                     ),
                     results_container
                 ],
@@ -669,6 +715,8 @@ class PrescriptionPage:
         self.frequency.value = ""
         self.time_interval.value = ""
         self.doctor_name.value = ""
+        self.appointment_date.value = ""
+        self.appointment_time.value = ""
         self.start_date.value = ""
         self.end_date.value = ""
         self.quantity_limit.value = ""

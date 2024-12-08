@@ -51,8 +51,8 @@ class PrescriptionManager:
         """        
 
         required_fields = [
-            'medication', 'dosage', 'frequency', 'doctor', 
-            'start_date', 'end_date'
+            'medication', 'dosage', 'frequency', 'doctor', 'appointment_date',
+            'appointment_time', 'start_date', 'end_date'
         ]
 
         for field in required_fields:
