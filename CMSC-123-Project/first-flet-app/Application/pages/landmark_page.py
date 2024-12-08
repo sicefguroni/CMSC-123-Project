@@ -1,49 +1,10 @@
 import flet as ft
-import math
-import json
+from pharmacies_db import pharmacies
 
 class LandmarkPage:
     def __init__(self, page: ft.Page):
         # Expanded pharmacy database with more details
-        self.pharmacies = [
-            {
-                "name": "Wellness Pharmacy",
-                "address": "123 Health Street, Downtown",
-                "city": "New York",
-                "hours": "8:00 AM - 10:00 PM",
-                "phone": "+1 (555) 123-4567",
-                "distance": 0,
-                "keywords": ["wellness", "downtown", "health", "new york"]
-            },
-            {
-                "name": "City Central Pharmacy",
-                "address": "456 Medical Avenue, Midtown",
-                "city": "New York",
-                "hours": "7:00 AM - 11:00 PM",
-                "phone": "+1 (555) 987-6543",
-                "distance": 0,
-                "keywords": ["central", "midtown", "medical", "new york"]
-            },
-            {
-                "name": "Green Health Pharmacy",
-                "address": "789 Wellness Road, Uptown",
-                "city": "New York",
-                "hours": "9:00 AM - 9:00 PM",
-                "phone": "+1 (555) 246-8135",
-                "distance": 0,
-                "keywords": ["green", "health", "uptown", "new york"]
-            },
-            {
-                "name": "Riverside Pharmacy",
-                "address": "101 River Street, Brooklyn",
-                "city": "Brooklyn",
-                "hours": "8:30 AM - 9:30 PM",
-                "phone": "+1 (555) 369-2580",
-                "distance": 0,
-                "keywords": ["riverside", "brooklyn", "river"]
-            }
-        ]
-        
+        self.pharmacies = pharmacies
         self.page = page
     
     def search_pharmacies(self, search_term):
@@ -89,19 +50,11 @@ class LandmarkPage:
                 padding=10
             ),
             elevation=2,
-            width=350
+            width=360
         )
     
     def landmark_page(self):
-        # Location search input
-        location_input = ft.TextField(
-            label="Search Pharmacies",
-            hint_text="Enter pharmacy name, city, or keywords",
-            width=350,
-            suffix_icon=ft.icons.SEARCH
-        )
-        
-        # Pharmacies list and map containers
+        # Pharmacies list 
         pharmacies_container = ft.Column(spacing=10)
         
         # Scrollable results container
@@ -117,7 +70,7 @@ class LandmarkPage:
 
         # Search button
         def search_pharmacies(e):
-            search_term = location_input.value
+            search_term = search_button.value
             
             # Clear previous results
             pharmacies_container.controls.clear()
@@ -139,9 +92,9 @@ class LandmarkPage:
             # Update the UI
             pharmacies_container.update()
         
-        search_button = ft.ElevatedButton(
-            "Search Pharmacies", 
-            on_click=search_pharmacies,
+        search_button = ft.SearchBar(
+            bar_hint_text="Search Pharmacies", 
+            on_change=search_pharmacies,
             width=350
         )
         
@@ -152,9 +105,7 @@ class LandmarkPage:
                     ft.Container(
                         content=ft.Column([
                             ft.Text("Pharmacy Finder", size=24, weight=ft.FontWeight.BOLD),
-                            location_input,
                             search_button,
-                            ft.Divider(height=10)
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         spacing=10),

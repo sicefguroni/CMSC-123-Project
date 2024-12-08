@@ -378,11 +378,18 @@ class PrescriptionPage:
             """
             prescription_cards = []
 
+            # Get all prescriptions from the manager
+            all_prescriptions = self.prescription_manager.get_all_prescriptions()
+
             # Filter prescriptions based on search term
             filtered_prescriptions = [
                 prescription for prescription in self.prescription_manager.get_all_prescriptions()
                 if not search_term or search_term.lower() in prescription.get('medication', '').lower()
             ]
+
+            # Debugger
+            print(f"Total prescriptions: {len(all_prescriptions)}")
+            print(f"Filtered prescriptions: {len(filtered_prescriptions)}")
 
             for prescription in filtered_prescriptions:
                 def create_details_dialog(p):
@@ -531,6 +538,9 @@ class PrescriptionPage:
         """
         Create prescription list view from stored prescriptions
         """
+        # Explicitly get all prescriptions from the manager
+        prescriptions = self.prescription_manager.get_all_prescriptions()
+
         # Create list view with prescription cards
         prescription_list_view = ft.ListView(
             controls=self._create_prescription_cards(),
@@ -572,20 +582,22 @@ class PrescriptionPage:
         anchor = ft.SearchBar(
             width=340,
             view_elevation=4,
-            bar_hint_text="Search prescriptions...",
+            bar_hint_text="Search Prescriptions",
             divider_color=ft.colors.AMBER,
             on_change=on_search_change
         )
 
+        self.prescription_list_view = ft.ListView(
+            controls=self._create_prescription_cards(),
+            spacing=10,
+            expand=True
+        )
+
         # Scrollable results
         results_container = ft.Container(
-            content=ft.Column(
-                controls=[self.prescription_list_view],
-                scroll=ft.ScrollMode.AUTO,
-                expand=True
-            ),
-            padding=10,
-            expand=True
+        content=self.prescription_list_view,  # Directly use the ListView
+        padding=10,
+        expand=True
         )
 
         # Main container
@@ -596,7 +608,6 @@ class PrescriptionPage:
                         content=ft.Column([
                             ft.Text("Prescriptions", size=24, weight=ft.FontWeight.BOLD),
                             anchor,
-                            ft.Divider(height=10)
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         spacing=10),

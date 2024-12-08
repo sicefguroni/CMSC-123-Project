@@ -129,8 +129,7 @@ def main(page: ft.Page):
 
     top_navigation = ft.Container(
         content=navigation_row,
-        bgcolor=ft.colors.SURFACE_VARIANT,
-        padding=ft.padding.only(top=5, bottom=5),
+        padding=ft.padding.only(top=3, bottom=3),
     )
 
     content_area = ft.Container(
@@ -142,6 +141,7 @@ def main(page: ft.Page):
     main_column = ft.Column(
         [
             top_navigation,
+            ft.Divider(),
             content_area
         ],
         spacing=0,

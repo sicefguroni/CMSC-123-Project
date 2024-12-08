@@ -23,6 +23,12 @@ class PrescriptionManager:
         try:
             with open(self.storage_file, 'r') as f:
                 return json.load(f)
+
+            # Ensure each prescription has an ID
+            for index, prescription in enumerate(prescriptions, 1):
+                if 'id' not in prescription:
+                    prescription['id'] = index
+            
         except (FileNotFoundError, json.JSONDecodeError):
             return []
         
@@ -55,7 +61,7 @@ class PrescriptionManager:
                 return False
                 
         # Generate unique ID
-        prescription['id'] = len(self.prescriptions) + 1
+        prescription['id'] = (max([p.get('id', 0) for p in self.prescriptions]) + 1) if self.prescriptions else 1
 
         # Add timestamp
         prescription['created_at'] = datetime.now().isoformat()
