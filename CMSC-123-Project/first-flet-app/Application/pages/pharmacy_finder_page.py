@@ -26,7 +26,81 @@ class PharmacyFinderPage:
         return matching_pharmacies
     
     def create_pharmacy_card(self, pharmacy):
-        """Create a card for each pharmacy"""
+        """Create a clickalble card for each pharmacy"""
+        def create_details_dialog(p):
+            def show_details(e):
+                def handle_dialog_action(action):
+                    def _action(e):
+                        if action == 'close':
+                            if hasattr(self.page, 'dialog'):
+                                self.page.dialog.open = False
+                                self.page.update()
+                    return _action
+                
+                dlg = ft.AlertDialog(
+                    icon=ft.Icon(name=ft.icons.LOCAL_PHARMACY, color=ft.colors.PRIMARY),
+                    title=ft.Text(pharmacy['name'], weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
+                    content=ft.Container(
+                        content=ft.Column(
+                            controls=[
+                                # Pharmacy Image (Placeholder or Custom)
+                                ft.Container(
+                                    content=ft.Image(
+                                        src=pharmacy.get('image', '/api/placeholder/350/200'),
+                                        width=300,
+                                        height=230,
+                                        fit=ft.ImageFit.FIT_HEIGHT
+                                    ),
+                                    padding=5
+                                ),
+                                # Detailed Information
+                                
+                                ft.Row([
+                                    ft.Column([
+                                        ft.Row([
+                                            ft.Icon(ft.icons.LOCATION_ON, size=17),
+                                            ft.Text(
+                                                f"Address: {pharmacy['address']}", 
+                                                size=17, 
+                                                max_lines=2,  # Prevent overflow in long addresses
+                                            ),
+                                        ],
+                                        scroll=ft.ScrollMode.AUTO),
+                                        ft.Row([
+                                            ft.Icon(ft.icons.ALARM, size=17),
+                                            ft.Text(f"Hours: {pharmacy['hours']}", size=17),
+                                        ]),
+                                        ft.Row([
+                                            ft.Icon(ft.icons.PHONE, size=17),
+                                            ft.Text(f"Phone: {pharmacy['phone']}", size=17),
+                                        ]),
+                                        ft.Row([
+                                            ft.Icon(ft.icons.DIRECTIONS, size=17),
+                                            ft.Text(f"Distance: {pharmacy['distance']}", size=17),
+                                        ]),
+                                    ],
+                                    spacing=20,)
+                                ],
+                                scroll=ft.ScrollMode.AUTO),
+                        
+                            ],
+                            spacing=10,
+                            scroll=ft.ScrollMode.AUTO  # Enable scrolling for overflowing content
+                        ),
+                        width=350,  # Set a maximum width for the dialog
+                        height=400,  # Set a maximum height for the dialog
+                    ),
+                    actions=[
+                        ft.TextButton("Close", on_click=lambda e: handle_dialog_action('close')(e)),
+                    ],
+                    modal=True,  # Ensures the dialog captures focus
+                )
+
+                self.page.dialog = dlg
+                dlg.open = True
+                self.page.update()
+            return show_details
+
         return ft.Card(
             content=ft.Container(
                 content=ft.Column([
@@ -45,10 +119,15 @@ class PharmacyFinderPage:
                     ft.Row([
                         ft.Icon(ft.icons.PHONE, size=16),
                         ft.Text(pharmacy['phone'], size=12)
+                    ]),
+                    ft.Row([
+                        ft.Icon(ft.icons.DIRECTIONS, size=16),
+                        ft.Text(pharmacy['distance'], size=12)
                     ])
                 ], 
                 spacing=5),
-                padding=10
+                padding=10,
+                on_click=create_details_dialog(pharmacy)
             ),
             elevation=2,
             width=360
@@ -91,7 +170,7 @@ class PharmacyFinderPage:
                 )
             
             # Update the UI
-            pharmacies_container.update()
+            self.page.update()
         
         search_button = ft.SearchBar(
             bar_hint_text="Search Pharmacies", 
@@ -124,6 +203,6 @@ class PharmacyFinderPage:
         return pharmacy_finder_container
 
 # Usage in main app
-def pharmacy_finder_page():
-    pharmacy_finder = PharmacyFinderPage(ft.Page)
+def pharmacy_finder_page(page: ft.Page):
+    pharmacy_finder = PharmacyFinderPage(page)
     return pharmacy_finder.pharmacy_finder_page()

@@ -23,7 +23,7 @@ def main(page: ft.Page):
     prescription_pages = prescription_module.get_pages()
 
     # Load other pages
-    pharmacy_finder = pharmacy_finder_page()
+    pharmacy_finder = pharmacy_finder_page(page)
     reminder_instance = Reminder_Page(page)  # Create an instance of Reminder_Page <ISA NEW>
     reminder = reminder_instance.page_container  # Access its container <ISA NEW>
     inventory = inventory_page()

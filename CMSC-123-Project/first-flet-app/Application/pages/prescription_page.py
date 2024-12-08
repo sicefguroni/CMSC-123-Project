@@ -407,18 +407,22 @@ class PrescriptionPage:
                         dlg = ft.AlertDialog(
                             icon=ft.Icon(name=ft.icons.MEDICATION),
                             title=ft.Text(p["medication"], weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
-                            content=ft.Column(
-                                controls=[
-                                    ft.Text(f""),
-                                    ft.Text(f"Dosage: {p.get('dosage', 'N/A')}", size=17),
-                                    ft.Text(f"Frequency: {p.get('frequency', 'N/A')}", size=17),
-                                    ft.Text(f"Time Interval: {p.get('time_interval', 'N/A')}", size=17),
-                                    ft.Text(f"Doctor: {p.get('doctor', 'N/A')}", size=17),
-                                    ft.Text(f"Start Date: {p.get('start_date', 'N/A')}", size=17),
-                                    ft.Text(f"End Date: {p.get('end_date', 'N/A')}", size=17),
-                                    ft.Text(f"Quantity Limit: {p.get('quantity_limit', 'N/A')}", size=17),
-                                ],
-                                spacing=25,
+                            content=ft.Container(
+                                ft.Column(
+                                    controls=[
+                                        ft.Text(f""),
+                                        ft.Text(f"Dosage: {p.get('dosage', 'N/A')}", size=17),
+                                        ft.Text(f"Frequency: {p.get('frequency', 'N/A')}", size=17),
+                                        ft.Text(f"Time Interval: {p.get('time_interval', 'N/A')}", size=17),
+                                        ft.Text(f"Doctor: {p.get('doctor', 'N/A')}", size=17),
+                                        ft.Text(f"Start Date: {p.get('start_date', 'N/A')}", size=17),
+                                        ft.Text(f"End Date: {p.get('end_date', 'N/A')}", size=17),
+                                        ft.Text(f"Quantity Limit: {p.get('quantity_limit', 'N/A')}", size=17),
+                                    ],
+                                    spacing=25,
+                                ),
+                                width=350,
+                                height=400,
                             ),
                             actions=[
                                 ft.TextButton("Close", on_click=handle_dialog_action('close')),
@@ -438,7 +442,6 @@ class PrescriptionPage:
                                     leading=ft.Icon(ft.icons.MEDICATION),
                                     title=ft.Text(prescription["medication"]),
                                     subtitle=ft.Text(f"Dosage: {prescription.get('dosage', 'N/A')}"),
-                                    on_click=create_details_dialog(prescription)
                                 ),
                                 ft.ListTile(
                                     leading=ft.IconButton(
@@ -455,6 +458,7 @@ class PrescriptionPage:
                             ],
                         ),
                         padding=10,
+                        on_click=create_details_dialog(prescription)
                     ),
                     elevation=2,
                     width=350
