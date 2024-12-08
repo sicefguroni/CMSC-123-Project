@@ -1,14 +1,18 @@
 [
     {
-        "medication": "asd",
-        "dosage": "asd mcg",
+        "medication": "asdasd",
+        "dosage": "sad ml",
         "frequency": "asd",
-        "time_interval": "asd",
-        "doctor": "aasd",
+        "time_interval": "sd",
+        "doctor": "asd",
         "start_date": "asd",
         "end_date": "asd",
         "quantity_limit": "asd",
         "id": 1,
+<<<<<<< Updated upstream
         "created_at": "2024-12-07T10:15:15.667108"
+=======
+        "created_at": "2024-12-07T13:33:05.600068"
+>>>>>>> Stashed changes
     }
 ]

@@ -32,7 +32,8 @@ def main(page: ft.Page):
     page.appbar = ft.AppBar(
         leading=ft.Image(src="Medion-Logo.png", width=32, height=32),
         leading_width=50,
-        title=ft.Text("Medion"),
+        title=ft.Text("Medion: Prescription"),
+        title_spacing=0.0,
         center_title=False,
         bgcolor=ft.colors.SURFACE_VARIANT,
         actions=[
@@ -50,6 +51,7 @@ def main(page: ft.Page):
             leading=ft.Image(src="Medion-Logo.png", width=32, height=32),
             leading_width=50,
             title=ft.Text(f"Medion: {selected_icon}"),
+            title_spacing=0.0,
             center_title=False,
             bgcolor=ft.colors.SURFACE_VARIANT,
             actions=[
@@ -95,6 +97,21 @@ def main(page: ft.Page):
         return container
     
     def update_page_content(destination):
+               # Reset prescription module views when leaving Prescription page
+        if destination != "Presciption":
+            # if current view is not already prescription, reset to prescription view
+            if prescription_module.current_view != "prescription":
+                prescription_module.current_view = "prescription"
+                prescription_module.page_container.visible = True
+                prescription_module.add_prescription_container.visible = False
+                prescription_module.edit_prescription_container.visible = False
+
+        # Ensure safe access to prescription pages
+        if len(prescription_pages) >= 3:
+            prescription_pages[0].visible = destination == "Prescription"
+            prescription_pages[1].visible = destination == "Prescription" and prescription_module.current_view == "add_prescription"
+            prescription_pages[2].visible = destination == "Prescription" and prescription_module.current_view == "edit_prescription"
+
         # Update visibility for all pages
         prescription_pages[0].visible = destination == "Prescription"
         prescription_pages[1].visible = destination == "Prescription" and prescription_module.current_view == "add_prescription"
@@ -109,7 +126,7 @@ def main(page: ft.Page):
         # update all icons' appearances
         for icon in navigation_row.controls:
             if icon.data == destination:
-                icon.bgcolor = ft.colors.LIGHT_BLUE
+                icon.bgcolor = ft.colors.BLUE_50
                 icon.content.src = f"{icon.data}-Selected.png"
             else:
                 icon.bgcolor = ft.colors.TRANSPARENT
@@ -150,6 +167,8 @@ def main(page: ft.Page):
 
     # Add the top navigation bar and body content to the page
     page.add(main_column)
+
+    update_page_content(selected_icon)
 
 ft.app(
     main,
