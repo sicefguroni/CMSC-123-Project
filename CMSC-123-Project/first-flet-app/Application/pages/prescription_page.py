@@ -250,7 +250,7 @@ class PrescriptionPage:
             label="Frequency",
             width=173,
             border_radius=10,
-            hint_text="e.g., Once daily"
+            hint_text="e.g., 1/day, 2/week"
         )
 
         self.edit_time_interval = ft.TextField(
