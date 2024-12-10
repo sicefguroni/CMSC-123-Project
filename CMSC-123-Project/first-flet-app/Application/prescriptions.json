@@ -1,16 +1,16 @@
 [
     {
-        "medication": "cdc",
-        "dosage": "sd tablet",
-        "frequency": "sdc",
-        "time_interval": "sdc",
-        "doctor": "s",
-        "start_date": "sd",
-        "end_date": "csd",
-        "appointment_date": "c",
-        "appointment_time": "sdc",
-        "quantity_limit": "sdc",
+        "medication": "cs",
+        "dosage": "cs mcg",
+        "frequency": "cs",
+        "time_interval": "cs",
+        "doctor": "cs",
+        "start_date": "cs",
+        "end_date": "cs",
+        "appointment_date": "cs",
+        "appointment_time": "cs",
+        "quantity_limit": "cs",
         "id": 1,
-        "created_at": "2024-12-11T02:00:28.240396"
+        "created_at": "2024-12-11T03:36:09.171511"
     }
 ]

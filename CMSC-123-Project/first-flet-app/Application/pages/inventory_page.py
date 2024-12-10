@@ -92,7 +92,6 @@ def inventory_page():
                                         ft.IconButton(
                                             icon=ft.icons.DELETE,
                                             tooltip="Delete Medication",
-                                            icon_color=ft.colors.ERROR,
                                             on_click=lambda e, idx=idx: confirm_delete_item(e, idx),
                                         )
                                     ],
@@ -165,13 +164,11 @@ def inventory_page():
                 tablet_dosage_input,
                 tablet_stock_input,
                 ],
-                spacing=10,
+                spacing=20,
             ),
             width=200,
             height=200,
-            alignment=ft.MainAxisAlignment.CENTER,
         ),
-        alignment=ft.alignment.center,
         actions=[add_tablet_button, cancel_tablet_button],
         modal=True,
     )
@@ -181,32 +178,7 @@ def inventory_page():
     # Predefined valid fluid medications with valid dosages
 
     # Extract generic names for validation
-    def validate_fluid_name(e):
-        name = fluid_name_input.value.strip()
-
-        fluid_name_input.update()
-
-    def validate_fluid_dosage(e):
-        # Retrieve and clean the input values
-        name = fluid_name_input.value.strip()
-        dosage = fluid_dosage_input.value.strip()
-
-        fluid_name_input.update()
-        fluid_dosage_input.update()
-
-        # Convert the dosage input to a number
-        dosage = int(dosage)
-        
-        # Update the UI component with the error or clear it
-        fluid_dosage_input.update()
-
-
-    def validate_fluid_stock(e):
-        dosage = fluid_dosage_input.value.strip()
-        stock = fluid_stock_input.value.strip()
-
-        fluid_stock_input.update()
-
+   
     def add_fluid_item(e):
         name = fluid_name_input.value.strip()
         dosage = fluid_dosage_input.value.strip()
@@ -285,7 +257,6 @@ def inventory_page():
                                                 ft.IconButton(
                                                     icon=ft.icons.DELETE,
                                                     tooltip="Delete Medication",
-                                                    icon_color=ft.colors.ERROR,
                                                     on_click=lambda e, idx=idx: confirm_delete_fluid_item(e, idx),
                                                 )
                                             ]
@@ -388,13 +359,11 @@ def inventory_page():
                     fluid_dosage_input,
                     fluid_stock_input,
                 ],
-                spacing=10,
+                spacing=20,
             ),
             width=200,
             height=200,
-            alignment=ft.MainAxisAlignment.CENTER,
         ),
-        alignment=ft.alignment.center,
         actions=[add_fluid_button, cancel_fluid_button],
         modal=True,
     )
@@ -433,11 +402,13 @@ def inventory_page():
 
     add_tablet_med_button = ft.ElevatedButton(
         text="Add Tablet Medication",
+        width=230,
         on_click=lambda e: open_add_dialog(e, add_tablet_dialog),
     )
 
     add_fluid_med_button = ft.ElevatedButton(
         text="Add Fluid Medication",
+        width=230,
         on_click=lambda e: open_add_dialog(e, add_fluid_dialog),
     )
 
@@ -451,13 +422,11 @@ def inventory_page():
                     add_tablet_med_button,
                     add_fluid_med_button,
                 ],
-                spacing=10,
+                spacing=25,
             ),
-            width=200,
-            height=200,
-            alignment=ft.MainAxisAlignment.CENTER,
+            width=120,
+            height=100,
         ),
-        alignment=ft.alignment.center,
         actions=[ft.TextButton("Cancel", on_click=lambda e: close_dialog(e, fab_click_dialog))],
         modal=True,
     )
@@ -471,7 +440,6 @@ def inventory_page():
 
     fab_container = ft.Container(
         content=fab,
-        alignment=ft.alignment.bottom_right,
         right=20,
         bottom=20,
         padding=10
@@ -500,6 +468,7 @@ def inventory_page():
         controls=[
             ft.Container(
                 content=inventory_container,
+                padding=10,
                 top=0,
                 left=0,
                 right=0,
