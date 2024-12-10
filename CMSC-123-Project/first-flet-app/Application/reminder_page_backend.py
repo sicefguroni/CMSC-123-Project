@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 import json
 
 
-# Linked List: Data Structure
+# Linked List Template: Data Structure
 # ----------------------------------------------------------- #
 class Node:
     def __init__(self, val):
@@ -82,7 +82,6 @@ class ReminderCard(ABC):
     def _on_checked(self, e):
         pass
 
-
 class Appointment_ReminderCard(ReminderCard):
     def __init__(
         self,
@@ -93,6 +92,7 @@ class Appointment_ReminderCard(ReminderCard):
         on_delete: Callable,
     ):
         self.id = id
+        self.is_done = False
 
         # Appointment details
         self.doctor_name = doctor_name
@@ -142,7 +142,10 @@ class Appointment_ReminderCard(ReminderCard):
     def _on_checked(self, e):
         """Handle checkbox state changes."""
         if self.chk_btn.value:
+            temp = self
+            temp.is_done = True
             self.on_delete(self)  # Call the delete callback
+            return temp
 
     def is_today(self) -> bool:
         """Check if the appointment is today."""
@@ -168,7 +171,6 @@ class Appointment_ReminderCard(ReminderCard):
     def _str_to_time(self, time_str: str) -> time:
         """Convert a time string (HH:MM) to a time object."""
         return datetime.strptime(time_str, "%H:%M").time()
-
 
 class MedIntake_ReminderCard(ReminderCard):
     def __init__(
@@ -287,12 +289,87 @@ class MedIntake_ReminderCard(ReminderCard):
         return mapping.get(freq.lower(), timedelta(days=0))
 
 
+# SLL Template for Reminder Card
+# ----------------------------------------------------------- #
+class ReminderCard_SLL(LinkedList):
+    def in_the_list(self, id:int):
+        current = self.head
+
+        if current.id == id:
+            return True
+        
+        while current.nxt:
+            current = current.nxt
+            if current.id == id:
+                return True
+            
+        return False
+
+
+# File Names for Reminder Feature
+# ----------------------------------------------------------- #
+CURRENT_APPOINTMENTS_RCs_File = "current_appointments_RCList.json"
+CURRENT_MEDICINE_INTAKE_RCs_File = "current_medicine_intake_RCList.json"
+ONGOING_MED_INTAKE_RCs_File = "ongoing_med_intake_RCList.json"
+
 
 # Reminder Manager
 # ----------------------------------------------------------- #
 class ReminderManager:
     def __init__(self):
-        self.showing_appointments
+        self.appointments_RCs_to_show = ReminderCard_SLL()
+        self.med_intake_RCs_to_show = ReminderCard_SLL()
+
+        self.on_going_medicine_intake = ReminderCard_SLL()
+        self.appointments_today = ReminderCard_SLL()
+
+    # Collects ongoing prescriptions and stores them as reminder cards
+    def collect_ongoing_prescriptions(self):
+        # Get all prescriptions
+        prescription_module = PrescriptionManager()
+        all_prescriptions = prescription_module.get_all_prescriptions()
+
+        # Get all appointments today
+        # If the id exists in the list of today's appointments, do not include them
+        for p in all_prescriptions:
+            if self.appointments_today.in_the_list(p['id']):
+                continue
+
+            appointment_date = datetime.strptime(p["appointment_date"], "%m/%d/%Y")
+            if appointment_date != date.today():
+                continue
+
+            new_appt_reminder = Appointment_ReminderCard(p["id"], p["doctor"], p["appointment_date"],
+                                                         p["appointment_time"],)
+            self.appointments_today.add(new_appt_reminder)
+
+
+        # Create on going medicine intake RCs
+        # If id exists in the list of ongoing medicine intake, do not include
+        # If id does not exist but not active, do not include
+        for p in all_prescriptions:
+            if self.on_going_medicine_intake.in_the_list(p["id"]):
+                continue
+
+            today = date.today()
+            start_date = datetime.strptime(p["start_date"], "%m/%d/%Y")
+            end_date = datetime.strptime(p["end_date"], "%m/%d/%Y")
+            if today >= start_date and today <= end_date:
+                new_MI_reminder = MedIntake_ReminderCard(p["id"], p["medication"], p["dosage"], p["frequency"], p["time_interval"], p["start_date"], p["end_date"], )
+                self.on_going_medicine_intake.add(new_MI_reminder)
+
+    def notify_user(self):
+        # Check if there are any appointments today that are not done
+        # If a reminder_today.is_done == False, notify by adding a
+        # copy of itself to the appoinment_RCs_to_show
+        for appt in self.appointments_today:
+            if not appt.is_done:
+                self.appointments_RCs_to_show.add(appt)
+        
+        # Check if there are any medicines to intake
+
+        pass
+
 
     def load_from_file(self):
         pass
