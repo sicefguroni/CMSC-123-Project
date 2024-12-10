@@ -1,0 +1,46 @@
+[
+    {
+        "medication": "Biogesic",
+        "dosage": "cads mcg",
+        "frequency": "casd",
+        "time_interval": "cas",
+        "doctor": "asdc",
+        "start_date": "sadc",
+        "end_date": "sd",
+        "appointment_date": "cas",
+        "appointment_time": "asdc",
+        "quantity_limit": "casd",
+        "id": 1,
+        "created_at": "2024-12-09T12:17:09.818927",
+        "updated at": "2024-12-10T18:18:25.805701"
+    },
+    {
+        "medication": "biogesice",
+        "dosage": "7373 tablet",
+        "frequency": "32",
+        "time_interval": "ee",
+        "doctor": "66df",
+        "start_date": "ee",
+        "end_date": "ff",
+        "appointment_date": "f",
+        "appointment_time": "ff",
+        "quantity_limit": "ff",
+        "id": 2,
+        "created_at": "2024-12-10T16:00:56.958432",
+        "updated at": "2024-12-10T17:54:24.905203"
+    },
+    {
+        "medication": "asd",
+        "dosage": "sda ml",
+        "frequency": "asd",
+        "time_interval": "asd",
+        "doctor": "asd",
+        "start_date": "asd",
+        "end_date": "asd",
+        "appointment_date": "asd",
+        "appointment_time": "asd",
+        "quantity_limit": "asd",
+        "id": 3,
+        "created_at": "2024-12-10T17:52:45.928840"
+    }
+]
