@@ -332,79 +332,102 @@ class ReminderManager:
 
     def save_to_file(self):
         try:
+            # Serialize appointment reminders
             with open(CURRENT_APPOINTMENTS_RCs_File, "w") as f:
-                json.dump([{
-                    "id": card.id,
-                    "doctor_name": card.doctor_name,
-                    "appointment_date": card.appointment_date,
-                    "appointment_time": card.appointment_time
-                } for card in self.appointments_today], f)
+                json.dump([
+                    {
+                        "id": card.id,
+                        "doctor_name": card.doctor_name,
+                        "appointment_date": card.appointment_date.strftime("%Y-%m-%d"),  # Convert to string
+                        "appointment_time": card.appointment_time.strftime("%H:%M:%S"),  # Convert to string
+                    }
+                    for card in self.appointments_today
+                ], f)
 
+            # Serialize medicine intake reminders
             with open(CURRENT_MEDICINE_INTAKE_RCs_File, "w") as f:
-                json.dump([{
-                    "id": card.id,
-                    "medicine_name": card.medicine_name,
-                    "dosage": card.dosage,
-                    "frequency_schedule": card.frequency_schedule,
-                    "time_interval": card.time_interval.total_seconds(),
-                    "start_date": card.start_date.strftime("%Y-%m-%d"),
-                    "end_date": card.end_date.strftime("%Y-%m-%d")
-                } for card in self.on_going_medicine_intake], f)
+                json.dump([
+                    {
+                        "id": card.id,
+                        "medicine_name": card.medicine_name,
+                        "dosage": card.dosage,
+                        "frequency_schedule": card.frequency_schedule,
+                        "time_interval": card.time_interval.total_seconds(),  # Convert timedelta to seconds
+                        "start_date": card.start_date.strftime("%Y-%m-%d"),  # Convert date to string
+                        "end_date": card.end_date.strftime("%Y-%m-%d"),  # Convert date to string
+                    }
+                    for card in self.on_going_medicine_intake
+                ], f)
 
+            # Serialize finished reminders
             with open(FINISHED_APPOINTMENTS_File, "w") as f:
-                json.dump([card_id for card_id in self.finished_appointments], f)
+                json.dump(list(self.finished_appointments), f)
 
             with open(FINISHED_MED_INTAKE_File, "w") as f:
-                json.dump([card_id for card_id in self.finished_medicine_intake], f)
+                json.dump(list(self.finished_medicine_intake), f)
+
         except Exception as e:
             print(f"Error saving to file: {e}")
 
+
     def load_from_file(self):
         try:
-            self.appointments_RCs_to_show = ReminderCard_SLL()
-            self.med_intake_RCs_to_show = ReminderCard_SLL()
-            self.on_going_medicine_intake = ReminderCard_SLL()
             self.appointments_today = ReminderCard_SLL()
+            self.on_going_medicine_intake = ReminderCard_SLL()
             self.finished_appointments = LinkedList()
             self.finished_medicine_intake = LinkedList()
 
-            with open(CURRENT_APPOINTMENTS_RCs_File, "r") as f:
-                appointments = json.load(f)
-                for appt_data in appointments:
-                    new_appt = Appointment_ReminderCard(
-                        id=appt_data["id"],
-                        doctor_name=appt_data["doctor_name"],
-                        appt_date=appt_data["appointment_date"],
-                        appt_time=appt_data["appointment_time"],
-                        on_delete=self.remove_appointment,
-                    )
-                    self.appointments_today.add(new_appt)
+            # Load appointment reminders
+            try:
+                with open(CURRENT_APPOINTMENTS_RCs_File, "r") as f:
+                    appointments = json.load(f)
+                    for appt_data in appointments:
+                        new_appt = Appointment_ReminderCard(
+                            id=appt_data["id"],
+                            doctor_name=appt_data["doctor_name"],
+                            appt_date=datetime.strptime(appt_data["appointment_date"], "%Y-%m-%d").date(),  # Convert string back to date
+                            appt_time=datetime.strptime(appt_data["appointment_time"], "%H:%M:%S").time(),  # Convert string back to time
+                            on_delete=self.remove_appointment,
+                        )
+                        self.appointments_today.add(new_appt)
+            except (FileNotFoundError, json.JSONDecodeError):
+                print(f"Skipping loading {CURRENT_APPOINTMENTS_RCs_File} due to missing or invalid data.")
 
-            with open(CURRENT_MEDICINE_INTAKE_RCs_File, "r") as f:
-                med_intakes = json.load(f)
-                for med_data in med_intakes:
-                    new_med = MedIntake_ReminderCard(
-                        id=med_data["id"],
-                        medicine_name=med_data["medicine_name"],
-                        dosage=med_data["dosage"],
-                        frequency_sched=med_data["frequency_schedule"],
-                        time_interval=timedelta(seconds=med_data["time_interval"]),
-                        start_date=datetime.strptime(med_data["start_date"], "%Y-%m-%d").date(),
-                        end_date=datetime.strptime(med_data["end_date"], "%Y-%m-%d").date(),
-                        on_delete=self.remove_medicine_intake,
-                    )
-                    self.on_going_medicine_intake.add(new_med)
+            # Load medicine intake reminders
+            try:
+                with open(CURRENT_MEDICINE_INTAKE_RCs_File, "r") as f:
+                    med_intakes = json.load(f)
+                    for med_data in med_intakes:
+                        new_med = MedIntake_ReminderCard(
+                            id=med_data["id"],
+                            medicine_name=med_data["medicine_name"],
+                            dosage=med_data["dosage"],
+                            frequency_sched=med_data["frequency_schedule"],
+                            time_interval=timedelta(seconds=med_data["time_interval"]),  # Convert seconds back to timedelta
+                            start_date=datetime.strptime(med_data["start_date"], "%Y-%m-%d").date(),  # Convert string back to date
+                            end_date=datetime.strptime(med_data["end_date"], "%Y-%m-%d").date(),  # Convert string back to date
+                            on_delete=self.remove_medicine_intake,
+                        )
+                        self.on_going_medicine_intake.add(new_med)
+            except (FileNotFoundError, json.JSONDecodeError):
+                print(f"Skipping loading {CURRENT_MEDICINE_INTAKE_RCs_File} due to missing or invalid data.")
 
-            with open(FINISHED_APPOINTMENTS_File, "r") as f:
-                for card_id in json.load(f):
-                    self.finished_appointments.add(card_id)
+            # Load finished reminders
+            try:
+                with open(FINISHED_APPOINTMENTS_File, "r") as f:
+                    self.finished_appointments = LinkedList(json.load(f))
+            except (FileNotFoundError, json.JSONDecodeError):
+                print(f"Skipping loading {FINISHED_APPOINTMENTS_File} due to missing or invalid data.")
 
-            with open(FINISHED_MED_INTAKE_File, "r") as f:
-                for card_id in json.load(f):
-                    self.finished_medicine_intake.add(card_id)
-        except FileNotFoundError:
-            print("Files not found. Starting fresh.")
+            try:
+                with open(FINISHED_MED_INTAKE_File, "r") as f:
+                    self.finished_medicine_intake = LinkedList(json.load(f))
+            except (FileNotFoundError, json.JSONDecodeError):
+                print(f"Skipping loading {FINISHED_MED_INTAKE_File} due to missing or invalid data.")
+
         except Exception as e:
             print(f"Error loading from file: {e}")
+
+
 
 
