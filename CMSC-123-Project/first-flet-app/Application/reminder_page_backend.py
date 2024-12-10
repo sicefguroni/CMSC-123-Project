@@ -6,6 +6,67 @@ from abc import ABC, abstractmethod
 import json
 
 
+# Linked List: Data Structure
+# ----------------------------------------------------------- #
+class Node:
+    def __init__(self, val):
+        self.value = val
+        self.nxt = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+        self.size = 0
+
+    def is_empty(self):
+        return self.head is None
+
+    def add(self, val):
+        new_node = Node(val)
+        if self.is_empty():
+            self.head = new_node
+        else:
+            current = self.head
+            while current.nxt:
+                current = current.nxt
+            current.nxt = new_node
+        self.size += 1
+
+    def remove(self, val):
+        if self.is_empty():
+            return None
+
+        if self.head.value == val:
+            self.head = self.head.nxt
+            self.size -= 1
+            return val
+
+        current = self.head
+        while current.nxt and current.nxt.value != val:
+            current = current.nxt
+
+        if current.nxt is None:
+            return None
+        else:
+            current.nxt = current.nxt.nxt
+            self.size -= 1
+            return val
+
+    def get(self, index):
+        if self.is_empty():
+            return None
+
+        if index < 0 or index >= self.size:
+            return None
+
+        current = self.head
+        for i in range(index):
+            current = current.nxt
+
+        return current.value
+
+
+
 # Reminder Cards: Hold information to remind users
 # ----------------------------------------------------------- #
 class ReminderCard(ABC):
