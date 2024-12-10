@@ -11,8 +11,12 @@ from pages.inventory_page import inventory_page
 
 
 def main(page: ft.Page):
-    # Set up the page
+    # Set up the page  
+    page.window_width = 414
+    page.window_height = 736
+    page.title = "Medion"
 
+    selected_icon = "Prescription"
 
     # Create prescription module
     prescription_module = PrescriptionPage(page)
