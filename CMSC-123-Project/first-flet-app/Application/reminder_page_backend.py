@@ -231,6 +231,10 @@ class MedIntake_ReminderCard(ReminderCard):
 # ----------------------------------------------------------- #
 class ReminderManager:
     def __init__(self):
+        self.showing_appointments
+
+    def load_from_file(self):
         pass
 
-    def load
+    def save_to_file(self):
+        pass
