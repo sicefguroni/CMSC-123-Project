@@ -1,5 +1,6 @@
 import flet as ft
 from typing import List
+from reminder_page_backend import ReminderManager
 
 
 class Reminder_Card:
