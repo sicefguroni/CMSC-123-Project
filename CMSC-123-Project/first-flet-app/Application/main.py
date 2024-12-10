@@ -30,9 +30,9 @@ def main(page: ft.Page):
 
     # Create default app bar 
     page.appbar = ft.AppBar(
-        leading=ft.Image(src="Medion-Logo.png", width=32, height=32),
+        leading=ft.Image(src="Medion-Logo.png", width=200, height=100),
         leading_width=50,
-        title=ft.Text("Medion: Prescription"),
+        title=ft.Text("Medion: Prescription", weight=ft.FontWeight.BOLD, size=20),
         title_spacing=0.0,
         center_title=False,
         actions=[
@@ -48,9 +48,9 @@ def main(page: ft.Page):
         selected_icon = e.control.data  # Update the selected icon string
 
         page.appbar = ft.AppBar(
-            leading=ft.Image(src="Medion-Logo.png", width=32, height=32),
+            leading=ft.Image(src=f"Medion-Logo.png", width=200, height=100),
             leading_width=50,
-            title=ft.Text(f"Medion: {selected_icon}"),
+            title=ft.Text(f"Medion: {selected_icon}", weight=ft.FontWeight.BOLD, size=20, color = ft.colors.INDIGO_500),
             title_spacing=0.0,
             center_title=False,
             actions=[

@@ -8,7 +8,7 @@ pharmacies = [
         "phone": "(032)4147224",
         "hours": "24 hours everyday",
         "city": "Cebu City",
-        "distance": "950m",
+        "distance": "950 m",
         "keywords": ["360 Lahug", "ThreeSixty Lahug", "ThreeSixty Pharmacy", "Gorordo Ave."]
     },
     {
@@ -18,7 +18,7 @@ pharmacies = [
         "phone": "09209584013",
         "city": "Cebu City",
         "hours": "6:00 AM - 11:00 PM",
-        "distance": " 1.4 km",
+        "distance": "1.4 km",
         "keywords": ["360 Escario", "ThreeSixty Escario", "ThreeSixty Pharmacy", "Corner Escario"]
     },
     {
@@ -28,7 +28,7 @@ pharmacies = [
         "phone": "(032)3468463",
         "city": "Cebu City",
         "hours": "8:00 AM - 9:00 PM",
-        "distance": " 1.2km",
+        "distance": "1.2 km",
         "keywords": ["Geehive", "Geehive Pharmacy ", "Geehive General Merchandise",
         "Cabantan"]
     },
@@ -39,7 +39,7 @@ pharmacies = [
         "phone": "(032)1234230",
         "city": "Cebu City",
         "hours": "24 hours everyday",
-        "distance": " 1.2km",
+        "distance": "1.2 km",
         "keywords": ["Immanuel", "Immanuel Pharmacy", "Cabantan"]
     },
     {
@@ -49,7 +49,7 @@ pharmacies = [
         "city": "Cebu City",
         "hours": "10:00 AM - 9:00 PM",
         "phone": "(032)2340230",
-        "distance": " 1.1km",
+        "distance": "1.1 km",
         "keywords": ["Mercury", "Mercury Drug", "Ayala Center"]
     },
     {
@@ -59,7 +59,7 @@ pharmacies = [
         "city": "Cebu City",
         "hours": "24 hours everyday",
         "phone": "(032)2535363",
-        "distance": " 2.4km",
+        "distance": "2.4 km",
         "keywords": ["New Libres", "New Libres Pharmacy", "New", "Libres", "B. Rodriguez"]
     },
     {
@@ -69,7 +69,7 @@ pharmacies = [
         "city": "Cebu City",
         "hours": "24 hours everyday",
         "phone": "(032)2338620",
-        "distance": " 1.0km",
+        "distance": "1.0 km",
         "keywords": ["Pharmacy", "Gonzales Compound", "Gorordo Ave."]
     },
     {
@@ -79,7 +79,7 @@ pharmacies = [
         "city": "Cebu City",
         "hours": "8:00 AM - 10:00 PM",
         "phone": "09285190271",
-        "distance": " 1.6km",
+        "distance": "1.6 km",
         "keywords": ["Rose", "Rose Pharmacy", "Rose AVC", "Cebu City"]
     },
     {
@@ -89,7 +89,7 @@ pharmacies = [
         "city": "Cebu City",
         "hours": "7:00 AM - 11:00 PM",
         "phone": "09088935196",
-        "distance": " 1.6km",
+        "distance": "1.6 km",
         "keywords": ["Rose", "Rose Pharmacy", "Rose Avila", "Cor Don Jose Avila"]
     },
     {
@@ -99,7 +99,7 @@ pharmacies = [
         "city": "Cebu City",
         "hours": "7:00 AM - 11:00 PM",
         "phone": "09998849741",
-        "distance": " 950m",
+        "distance": "950 m",
         "keywords": ["Rose", "Rose Pharmacy", "Rose Sanson", "Gorordo Ave."]
     },
     {
@@ -109,7 +109,7 @@ pharmacies = [
         "city": "Cebu City",
         "hours": "24 hours Mon-Sat",
         "phone": "rosepharmacy.com",
-        "distance": " 2.4km",
+        "distance": "2.4 km",
         "keywords": ["Rose", "Rose Pharmacy", "Rose Skyrise", "Skyrise 1"]
     },
     {
@@ -119,7 +119,7 @@ pharmacies = [
         "city": "Cebu City",
         "hours": "7:00 AM - 8:00 PM",
         "phone": "09430872326",
-        "distance": " 1.1km",
+        "distance": "1.1 km",
         "keywords": ["TGP", "The Generics", "The Generics Pharmacy", "Corner Salinas",
         "Veterans Drive"]
     }

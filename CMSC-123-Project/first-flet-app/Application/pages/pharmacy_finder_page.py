@@ -114,7 +114,7 @@ class PharmacyFinderPage:
                     ]),
                     ft.Row([
                         ft.Icon(ft.icons.ALARM, size=16),
-                        ft.Text(f"Hours: {pharmacy['hours']}", size=12)
+                        ft.Text(pharmacy['hours'], size=12)
                     ]),
                     ft.Row([
                         ft.Icon(ft.icons.PHONE, size=16),
