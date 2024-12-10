@@ -46,7 +46,7 @@ def main(page: ft.Page):
         page.appbar = ft.AppBar(
             leading=ft.Image(src=f"Medion-Logo.png", width=200, height=100),
             leading_width=50,
-            title=ft.Text(f"Medion: {selected_icon}", weight=ft.FontWeight.BOLD, size=20, color = ft.colors.INDIGO_500),
+            title=ft.Text(f"Medion: {selected_icon}", weight=ft.FontWeight.BOLD, size=20),
             title_spacing=0.0,
             center_title=False,
             actions=[
