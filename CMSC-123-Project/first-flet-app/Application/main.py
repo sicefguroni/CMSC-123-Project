@@ -35,10 +35,10 @@ def main(page: ft.Page):
         title=ft.Text("Medion: Prescription"),
         title_spacing=0.0,
         center_title=False,
-        bgcolor=ft.colors.SURFACE_VARIANT,
         actions=[
                 ft.IconButton(ft.icons.HELP, tooltip=f"Help for Medion")
         ],
+        toolbar_height=50,
     )
 
     # Function to handle navigation
@@ -53,10 +53,10 @@ def main(page: ft.Page):
             title=ft.Text(f"Medion: {selected_icon}"),
             title_spacing=0.0,
             center_title=False,
-            bgcolor=ft.colors.SURFACE_VARIANT,
             actions=[
                 ft.IconButton(ft.icons.HELP, tooltip=f"Help for {selected_icon}")
             ],
+            toolbar_height=50,
         )
         # update visible content
         update_page_content(selected_icon)
@@ -157,8 +157,9 @@ def main(page: ft.Page):
 
     main_column = ft.Column(
         [
+            ft.Divider(height=2, thickness=1),
             top_navigation,
-            ft.Divider(),
+            ft.Divider(height=2, thickness=1),
             content_area
         ],
         spacing=0,

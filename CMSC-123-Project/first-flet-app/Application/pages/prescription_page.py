@@ -463,7 +463,7 @@ class PrescriptionPage:
                                         ft.Text(f"End Date: {p.get('end_date', 'N/A')}", size=17),
                                         ft.Text(f"Quantity Limit: {p.get('quantity_limit', 'N/A')}", size=17),
                                     ],
-                                    spacing=25,
+                                    spacing=20,
                                 ),
                                 width=350,
                                 height=330,
@@ -635,6 +635,7 @@ class PrescriptionPage:
             width=360,
             view_elevation=4,
             bar_hint_text="Search Prescriptions",
+            bar_leading=ft.Icon(name=ft.icons.SEARCH), 
             divider_color=ft.colors.AMBER,
             on_change=on_search_change
         )

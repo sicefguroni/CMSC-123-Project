@@ -173,7 +173,8 @@ class PharmacyFinderPage:
             self.page.update()
         
         search_button = ft.SearchBar(
-            bar_hint_text="Search Pharmacies", 
+            bar_hint_text="Search Pharmacies",
+            bar_leading=ft.Icon(name=ft.icons.SEARCH), 
             on_change=search_pharmacies,
             width=360
         )

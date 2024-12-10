@@ -1,17 +1,17 @@
 [
     {
-        "medication": "cas",
-        "dosage": "dsa mcg",
-        "frequency": "as",
-        "time_interval": "asd",
-        "doctor": "asd",
-        "start_date": "asd",
-        "end_date": "asd",
-        "appointment_date": "sf",
-        "appointment_time": "sf",
-        "quantity_limit": "asd",
+        "medication": "Biogesic",
+        "dosage": "cads mcg",
+        "frequency": "casd",
+        "time_interval": "cas",
+        "doctor": "asdc",
+        "start_date": "sadc",
+        "end_date": "casd",
+        "appointment_date": "cas",
+        "appointment_time": "asdc",
+        "quantity_limit": "casd",
         "id": 1,
-        "created_at": "2024-12-08T18:13:59.261982",
-        "updated at": "2024-12-08T18:25:25.765189"
+        "created_at": "2024-12-09T12:17:09.818927",
+        "updated at": "2024-12-09T12:17:39.807470"
     }
 ]
