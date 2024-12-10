@@ -6,6 +6,22 @@ from abc import ABC, abstractmethod
 import json
 
 
+# Helper Functions
+# ----------------------------------------------------------- #
+def str_to_date_mmddyyyy(date_str: str) -> date:
+    return datetime.strptime(date_str, "%m/%d/%Y").date()
+
+def date_to_str_mmddyyyy(date_obj: date) -> str:
+    return date_obj.strftime("%m/%d/%Y")
+
+def str_to_time_hhmm(time_str: str) -> time:
+    return datetime.strptime(time_str, "%H:%M").time()
+
+def time_to_str_hhmm(time_obj: time) -> str:
+    return time_obj.strftime("%H:%M")
+
+
+
 # Linked List Template: Data Structure
 # ----------------------------------------------------------- #
 class Node:
@@ -67,6 +83,24 @@ class LinkedList:
 
 
 
+# SLL Template for Reminder Card
+# ----------------------------------------------------------- #
+class ReminderCard_SLL(LinkedList):
+    def in_the_list(self, id:int):
+        current = self.head
+
+        if current.id == id:
+            return True
+        
+        while current.nxt:
+            current = current.nxt
+            if current.id == id:
+                return True
+            
+        return False
+
+
+
 # Reminder Cards: Hold information to remind users
 # ----------------------------------------------------------- #
 class ReminderCard(ABC):
@@ -81,6 +115,139 @@ class ReminderCard(ABC):
     @abstractmethod
     def _on_checked(self, e):
         pass
+
+class Appointment_RC(ReminderCard):
+    def __init__(
+            self,
+            id:int,
+            doctor:str,
+            appointment_date:str,
+            appointment_time:str,
+            on_delete:Callable
+    ):
+        self.id = id
+
+        # Appointment Information
+        self.doctor = doctor
+        self.appointment_date = appointment_date
+        self.appointment_time = appointment_time
+
+        # Callback for deletion
+        self.on_delete:Callable = on_delete
+
+        # UI Components
+        self.chk_btn = ft.Checkbox(value=False, on_change=self._on_checked)
+        self.card = self._create_reminder_card()
+    
+    def _create_reminder_card(self):
+        return ft.Card(
+            content=ft.Container(
+                content=ft.Column(
+                    controls=[
+                        ft.ListTile(
+                            title=ft.Text("Upcoming Appointment Tomorrow!"),
+                            trailing=self.chk_btn,
+                        ),
+                        ft.Container(
+                            content=ft.Text(
+                                f"You have an appointment with Dr. {self.doctor_name} "
+                                f"on {self.appointment_date} at {self.appointment_time}. Get ready!"
+                                f"Mark this checked if you have finished your appointment. :D"
+                            ),
+                            padding=ft.padding.only(left=20, right=20),
+                        ),
+                    ],
+                ),
+                padding=ft.padding.symmetric(vertical=10),
+            ),
+        )
+
+    def _on_checked(self, e):
+        if self.chk_btn.value:
+            time.sleep(2)
+            id = self.id
+            self.on_delete(self)  # Call the delete callback
+            return id
+        
+    def notify_user(self):
+        return self.card
+
+    def is_tomorrow(self):
+        date_today = date.today()
+        day_before_appointment = str_to_date_mmddyyyy(self.appointment_date) - timedelta(days=1)
+        return date_today == day_before_appointment
+
+class MedicineIntake_RC(ReminderCard):
+    def __init__(
+            self,
+            id:int,
+            medication:str,
+            frequency:str,
+            time_interval:int,
+            start_date:str,
+            end_date:str,
+            quantity_limit:int,
+            on_delete:Callable
+    ):
+        self.id = id
+
+        # Medication Info
+        self.medication = medication
+        self.quantity_limit = quantity_limit
+        self.total_intake = 0
+
+        # Med Intake Schedule Interval
+        self.frequency_num = self._str_freq_to_int(frequency)
+        self.frequency_sched = self._str_freq_to_timedelta(frequency)
+        self.time_interval = timedelta(hours=time_interval)
+        self.start_date = start_date
+        self.end_date = end_date
+        self.frequency_num_count = 0
+
+        # Callback for deletion
+        self.on_delete = on_delete
+
+        # UI Components
+        self.chk_btn = ft.Checkbox(value=False, on_change=self._on_checked)
+        self.card = self._create_reminder_card()
+
+    def _create_reminder_card(self) -> ReminderCard_SLL():
+        reminder_cards_SLL = ReminderCard_SLL()
+        for i in range(self.frequency_num):
+            container = ft.Card(
+                content=ft.Container(
+                    content=ft.Column(
+                        controls=[
+                            ft.ListTile(
+                                title=ft.Text(f"{self.medicine_name} ({self.dosage})"),
+                                trailing=self.chk_btn,
+                            ),
+                            ft.Container(
+                                content=ft.Text(
+                                    f"Take your medicine {self.medicine_name} ({self.dosage})! "
+                                    f"Once you're done, check the checkbox! :D"
+                                ),
+                                padding=ft.padding.only(left=20, right=20),
+                            ),
+                        ],
+                    ),
+                    padding=ft.padding.symmetric(vertical=10),
+                ),
+            )
+        
+
+        
+        
+
+
+
+
+
+
+
+
+
+
 
 class Appointment_ReminderCard(ReminderCard):
     def __init__(
@@ -289,21 +456,6 @@ class MedIntake_ReminderCard(ReminderCard):
         return mapping.get(freq.lower(), timedelta(days=0))
 
 
-# SLL Template for Reminder Card
-# ----------------------------------------------------------- #
-class ReminderCard_SLL(LinkedList):
-    def in_the_list(self, id:int):
-        current = self.head
-
-        if current.id == id:
-            return True
-        
-        while current.nxt:
-            current = current.nxt
-            if current.id == id:
-                return True
-            
-        return False
 
 
 # File Names for Reminder Feature
@@ -367,8 +519,7 @@ class ReminderManager:
                 self.appointments_RCs_to_show.add(appt)
         
         # Check if there are any medicines to intake
-
-        pass
+        
 
 
     def load_from_file(self):

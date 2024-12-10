@@ -1,13 +1,40 @@
 import flet as ft
 from typing import List
-from pages.reminder_page_backend import ReminderManager
+from reminder_page_backend import ReminderManager
+
+
+class Reminder_Card:
+    def __init__(self, title:str, content:ft.Text, on_delete:callable):
+        self.title = title
+        self.content = content
+        self.on_delete = on_delete  # Callback for deleting the card
+
+    def get(self):
+        return ft.Card(
+            content=ft.Container(
+                content=ft.Column(
+                    controls=[
+                        # Title of Reminder Card + Checkbox
+                        ft.ListTile(
+                            title=ft.Text(self.title),
+                            trailing=ft.Checkbox(value=False, on_change=lambda e: self.on_delete(self))
+                        ),
+                        # Content of Reminder Card
+                        ft.Container(
+                            content=self.content,
+                            padding=ft.padding.only(left=20, right=20),
+                        ),
+                    ],
+                ),
+                padding=ft.padding.symmetric(vertical=5),
+            )
+        )
 
 
 class Reminder_Page:
     def __init__(self, page: ft.Page):
         self.page = page
         self.current_view = "Medicine Intake"  # Default view
-        self.reminder_manager = ReminderManager()  # Instantiate the backend ReminderManager
         self.reminder_cards = []  # List of current reminders
 
         self.notification_switch = ft.Switch(label="Enable Notifications", value=True)
@@ -27,29 +54,25 @@ class Reminder_Page:
         )
         self.page_container = self._create_reminder_page()
 
-        # Load reminders from backend at initialization
-        self._initialize_reminders()
 
-    def _initialize_reminders(self):
-        # Load ongoing prescriptions and notify users at app startup
-        self.reminder_manager.collect_ongoing_prescriptions()
-        self.reminder_manager.notify_user()
-
-        # Load the default view
-        self._show_view(self.current_view)
-
-    def _add_reminder(self, reminder_card):
-        # Add a new reminder card to the list view
+    def _add_reminder(self, title: str, content: str):
+        # Add a new reminder card
+        reminder_card = Reminder_Card(
+            title,
+            content,
+            on_delete=self._delete_reminder,
+        )
         self.reminder_cards.append(reminder_card)
-        self.reminder_list_view.controls.append(reminder_card.card)
+        self.reminder_list_view.controls.append(reminder_card.get())
         self.page.update()
 
+
     def _delete_reminder(self, reminder_card):
-        """Remove a specific reminder card after a delay."""
-        if reminder_card in self.reminder_cards:
-            self.reminder_cards.remove(reminder_card)
-            self.reminder_list_view.controls.remove(reminder_card.card)
-            self.page.update()
+        # Delete a specific reminder card
+        self.reminder_cards.remove(reminder_card)
+        self.reminder_list_view.controls.remove(reminder_card.get())
+        self.page.update()
+
 
     def _show_view(self, view_name: str):
         self.current_view = view_name
@@ -62,14 +85,22 @@ class Reminder_Page:
         self.page.update()
 
     def _load_medicine_reminders(self):
-        # Load medicine reminders from the ReminderManager
-        for med_card in self.reminder_manager.med_intake_RCs_to_show:
-            self._add_reminder(med_card)
+        # Load medicine reminders (example data)
+        reminders = [
+            ("Take morning pills", "8:00 AM"),
+            ("Take vitamins", "12:00 PM"),
+        ]
+        for title, content in reminders:
+            self._add_reminder(title, content)
 
     def _load_appointment_reminders(self):
-        # Load appointment reminders from the ReminderManager
-        for appt_card in self.reminder_manager.appointments_RCs_to_show:
-            self._add_reminder(appt_card)
+        # Load appointment reminders (example data)
+        reminders = [
+            ("Visit Dr. Smith", "3:00 PM"),
+            ("Dental check-up", "10:00 AM"),
+        ]
+        for title, content in reminders:
+            self._add_reminder(title, content)
 
     def _create_reminder_page(self):
         # Create Reminder Page layout
