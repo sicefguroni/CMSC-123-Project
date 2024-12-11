@@ -1,10 +1,13 @@
 import flet as ft
+from inventory_backend import MedicationInventory
 
 ########### TABLET MEDICATION INVENTORY ########
 
 def inventory_page():
-    inventory = []  # Combined inventory for tablets and fluids
-    fluid_inventory = []  # Separate inventory for fluids
+    inventory_backend = MedicationInventory()
+
+    inventory = inventory_backend.get_tablet_inventory()
+    fluid_inventory = inventory_backend.get_fluid_inventory()
 
     inventory_list = ft.Column(
         controls=[],
@@ -17,6 +20,7 @@ def inventory_page():
     )
 
     def add_item(e):
+        nonlocal inventory
         try:
             name = tablet_name_input.value.strip()
             dosage = tablet_dosage_input.value.strip()
@@ -26,11 +30,10 @@ def inventory_page():
             tablet_dosage_input.update()
             tablet_stock_input.update()
                 
-            inventory.append({
-                "name": name,
-                "dosage": int(dosage),
-                "stock": int(stock),
-            })
+            inventory_backend.add_tablet_medication(name, int(dosage), int(stock))
+
+            inventory = inventory_backend.get_tablet_inventory()
+
             tablet_name_input.value = ""
             tablet_dosage_input.value = ""
             tablet_stock_input.value = ""
@@ -41,9 +44,12 @@ def inventory_page():
             add_tablet_dialog.open = False
             e.page.update()
 
-            snack = ft.SnackBar(content=ft.Text("Tablet medication added successfully!"))
-            e.page.overlay.append(snack)
-            snack.open = True
+            dlg_add = ft.AlertDialog(
+                    content=ft.Text("Tablet medication added successfully!"),
+                    on_dismiss=lambda e: None,
+                )
+            e.page.overlay.append(dlg_add)
+            dlg_add.open = True
             e.page.update()
 
         except ValueError as ve:
@@ -78,12 +84,12 @@ def inventory_page():
                                                 ft.IconButton(
                                                     icon=ft.icons.ADD,
                                                     tooltip="Increase Stock",
-                                                    on_click=lambda e, idx=idx: adjust_stock(idx, 1),
+                                                    on_click=lambda e, idx=idx: adjust_stock(idx, 1, e.page),
                                                 ),
                                                 ft.IconButton(
                                                     icon=ft.icons.REMOVE,
                                                     tooltip="Decrease Stock",
-                                                    on_click=lambda e, idx=idx: adjust_stock(idx, -1),
+                                                    on_click=lambda e, idx=idx: adjust_stock(idx, -1, e.page),
                                                 ),
                                             ]
                                         ),
@@ -107,13 +113,22 @@ def inventory_page():
                 )
             )
         inventory_list.visible = len(inventory) > 0
-        inventory_list.update()
 
-    def adjust_stock(idx, amount):
-        try:
-            if 0 <= inventory[idx]["stock"] + amount:
-                inventory[idx]["stock"] += amount
-                update_inventory_list()
+    def adjust_stock(idx, amount, page):
+        nonlocal inventory
+        try:    
+            med = inventory[idx]
+
+            inventory_backend.update_tablet_stock(med['name'], med['dosage'], amount)
+
+            
+            inventory = inventory_backend.get_tablet_inventory()
+
+            update_inventory_list()
+            snack = ft.SnackBar(content=ft.Text(f"Stock updated for {med['name']}"))
+            page.overlay.append(snack)
+            snack.open = True
+            page.update()
         except IndexError as ie:
             print(f"Error adjusting stock: {ie}")
 
@@ -139,11 +154,27 @@ def inventory_page():
         e.page.update()
 
     def delete_item(e, idx, dialog):
+        nonlocal inventory
         try:
-            inventory.pop(idx)
+            med = inventory[idx]
+
+            inventory_backend.remove_tablet_medication(med['name'], med['dosage'])
+
+            
+            inventory = inventory_backend.get_tablet_inventory()
+
             update_inventory_list()
             dialog.open = False
             e.page.update()
+
+            dlg_add = ft.AlertDialog(
+                    content=ft.Text("Tablet medication deleted successfully!"),
+                    on_dismiss=lambda e: None,
+                )
+            e.page.overlay.append(dlg_add)
+            dlg_add.open = True
+            e.page.update()
+
         except IndexError as ie:
             print(f"Error deleting item: {ie}")
 
@@ -180,37 +211,52 @@ def inventory_page():
     # Extract generic names for validation
    
     def add_fluid_item(e):
-        name = fluid_name_input.value.strip()
-        dosage = fluid_dosage_input.value.strip()
-        stock = fluid_stock_input.value.strip()
+        nonlocal fluid_inventory
+        try:
+            name = fluid_name_input.value.strip()
+            dosage = fluid_dosage_input.value.strip()
+            stock = fluid_stock_input.value.strip()
 
-        # Validate all fields before adding
-        fluid_name_input.update()
+            # Validate all fields before adding
+            fluid_name_input.update()
 
-        fluid_dosage_input.update()
+            fluid_dosage_input.update()
 
-        fluid_stock_input.update()
+            fluid_stock_input.update()
 
-        # Add valid fluid medication to inventory
-        fluid_inventory.append({
-            "name": name,
-            "dosage": int(dosage),
-            "stock": int(stock),
-        })
-        fluid_name_input.value = ""
-        fluid_dosage_input.value = ""
-        fluid_stock_input.value = ""
-        fluid_name_input.update()
-        fluid_dosage_input.update()
-        fluid_stock_input.update()
-        update_fluid_inventory_list()
-        add_fluid_dialog.open = False
-        e.page.update()
+            # Add valid fluid medication to inventory
+            # Use backend to add medication
+            inventory_backend.add_fluid_medication(name, int(dosage), int(stock))
+            
+            # Update local fluid inventory list from backend
+            fluid_inventory = inventory_backend.get_fluid_inventory()
 
-        snack = ft.SnackBar(content=ft.Text("Fluid medication added successfully!"))
-        e.page.overlay.append(snack)
-        snack.open = True
-        e.page.update()
+            fluid_name_input.value = ""
+            fluid_dosage_input.value = ""
+            fluid_stock_input.value = ""
+            fluid_name_input.update()
+            fluid_dosage_input.update()
+            fluid_stock_input.update()
+            update_fluid_inventory_list()
+            add_fluid_dialog.open = False
+            e.page.update()
+
+            dlg_add = ft.AlertDialog(
+                    content=ft.Text("Fluid medicine added successfully!"),
+                    on_dismiss=lambda e: None,
+                )
+            e.page.overlay.append(dlg_add)
+            dlg_add.open = True
+            e.page.update()
+        
+        except ValueError as ve:
+            print(f"Error adding item: {ve}")
+            error_snack = ft.SnackBar(content=ft.Text("Invalid input! Please enter valid data."))
+            e.page.overlay.append(error_snack)
+            error_snack.open = True
+            e.page.update()
+
+            
 
     def update_fluid_inventory_list():
         fluid_inventory_list.controls.clear()
@@ -237,12 +283,12 @@ def inventory_page():
                                                 ft.IconButton(
                                                     icon=ft.icons.ADD,
                                                     tooltip="Increase Stock",
-                                                    on_click=lambda e, idx=idx: adjust_fluid_stock(idx, 1),
+                                                    on_click=lambda e, idx=idx: adjust_fluid_stock(idx, 1, e.page),
                                                 ),
                                                 ft.IconButton(
                                                     icon=ft.icons.REMOVE,
                                                     tooltip="Decrease Stock",
-                                                    on_click=lambda e, idx=idx: adjust_fluid_stock(idx, -1),
+                                                    on_click=lambda e, idx=idx: adjust_fluid_stock(idx, -1, e.page),
                                                 ),
                                             ]
                                         ),
@@ -274,14 +320,24 @@ def inventory_page():
                 )
             )
         fluid_inventory_list.visible = len(fluid_inventory) > 0
-        fluid_inventory_list.update()
 
-    def adjust_fluid_stock(idx, adjustment):
+    def adjust_fluid_stock(idx, amount, page):
+        nonlocal fluid_inventory
+        try:
+            med = fluid_inventory[idx]
+
+            inventory_backend.update_fluid_stock(med['name'], med['dosage'], amount)
+
+            
+            fluid_inventory = inventory_backend.get_fluid_inventory()
         # Update the stock by adding or subtracting based on dosage
-        new_stock = fluid_inventory[idx]["stock"] + adjustment
-        if new_stock >= 0:
-            fluid_inventory[idx]["stock"] = new_stock
             update_fluid_inventory_list()
+            snack = ft.SnackBar(content=ft.Text(f"Stock updated for {med['name']}"))
+            page.overlay.append(snack)
+            snack.open = True
+            page.update()
+        except IndexError as ie:
+            print(f"Error adjusting fluid stock: {ie}")
 
     def open_edit_fluid_dialog(e, idx):
         global current_edit_idx  # Use a global variable to track the item index
@@ -300,20 +356,36 @@ def inventory_page():
 
     def save_edited_fluid_stock(e):
         global current_edit_idx  # Access the global variable for the current index
-        new_stock = edit_stock_input.value.strip()  # Get the new stock value from the input field
+        nonlocal fluid_inventory
+        try:
+            new_stock = int(edit_stock_input.value.strip())# Get the new stock value from the input field
 
+            med = fluid_inventory[current_edit_idx]
+
+            current_stock = med['stock']
+            stock_change = new_stock - current_stock
+
+            inventory_backend.update_fluid_stock(med['name'], med['dosage'], stock_change)
+
+            
+            fluid_inventory = inventory_backend.get_fluid_inventory()
+
+            update_fluid_inventory_list()
+
+            edit_fluid_dialog.open = False
+            e.page.update()
+
+            snack = ft.SnackBar(content=ft.Text("Fluid medication stock updated successfully!"))
+            e.page.overlay.append(snack)
+            snack.open = True
+            e.page.update()
         
-        e.page.update()
-
-        # Update the stock value in the selected fluid medication
-        fluid_inventory[current_edit_idx]["stock"] = int(new_stock)
-        
-        # Refresh the inventory list to reflect the updated stock
-        update_fluid_inventory_list()
-
-        # Close the dialog after saving
-        edit_fluid_dialog.open = False
-        e.page.update()
+        except (ValueError, IndexError) as e:
+            print(f"Error editing stock: {e}")
+            error_snack = ft.SnackBar(content=ft.Text("Invalid input! Please enter a valid stock number."))
+            e.page.overlay.append(error_snack)
+            error_snack.open = True
+            e.page.update()
 
     def confirm_delete_fluid_item(e, idx):
         confirm_dialog = ft.AlertDialog(
@@ -333,10 +405,28 @@ def inventory_page():
         e.page.update()
 
     def delete_fluid_item(e, idx, dialog):
-        fluid_inventory.pop(idx)
-        update_fluid_inventory_list()
-        dialog.open = False
-        e.page.update()
+        nonlocal fluid_inventory
+        try:
+            med = fluid_inventory[idx]
+
+            inventory_backend.remove_fluid_medication(med['name'], med['dosage'])
+    
+            
+            fluid_inventory = inventory_backend.get_fluid_inventory()
+
+            update_fluid_inventory_list()
+            dialog.open = False
+            e.page.update()
+            
+            dlg_add = ft.AlertDialog(
+                    content=ft.Text("Fluid medication deleted successfully!"),
+                    on_dismiss=lambda e: None,
+                )
+            e.page.overlay.append(dlg_add)
+            dlg_add.open = True
+            e.page.update()
+        except IndexError as ie:
+            print(f"Error deleting item: {ie}")
 
     def close_dialog(e, dialog):
         dialog.open = False
@@ -393,7 +483,6 @@ def inventory_page():
 
     # Fluid inventory list UI
     fluid_inventory_list = ft.Column()
-
 
 ######## Main Inventory UI #########
     
@@ -455,6 +544,10 @@ def inventory_page():
         dialog.open = False
         e.page.update()
 
+    
+    update_inventory_list()
+    update_fluid_inventory_list()
+
     # Main container for the entire inventory page
     inventory_container = ft.Column(
         controls=[
@@ -463,7 +556,7 @@ def inventory_page():
         ],
         visible=True  # Ensure the entire container is visible
     )
-
+    
     return ft.Stack(
         controls=[
             ft.Container(
