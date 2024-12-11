@@ -1,6 +1,6 @@
 import flet as ft
 from typing import List
-from pages.reminder_page_backend import ReminderManager
+from pages.reminder_page_backend import ReminderManager, Appointment_ReminderCard, MedIntake_ReminderCard
 
 
 class Reminder_Page:
@@ -8,7 +8,7 @@ class Reminder_Page:
         self.page = page
         self.current_view = "Medicine Intake"  # Default view
         self.reminder_manager = ReminderManager()  # Instantiate the backend ReminderManager
-        self.reminder_cards = []  # List of current reminders
+        self.reminder_cards = []
 
         self.notification_switch = ft.Switch(label="Enable Notifications", value=True)
         self.medicine_button = ft.TextButton(
@@ -51,51 +51,76 @@ class Reminder_Page:
             # Show an error message to the user if needed
 
     def _add_reminder(self, reminder_card):
-        # Add a new reminder card to the list view
-        self.reminder_cards.append(reminder_card)
-        self.reminder_list_view.controls.append(reminder_card.card)
-        
-        # Hide no reminders text if reminders exist
-        self.no_reminders_text.visible = False
-        self.page.update()
+        # Ensure that reminder_card is an instance of the correct class
+        if hasattr(reminder_card, 'card'):
+            self.reminder_cards.append(reminder_card)
+            self.reminder_list_view.controls.append(reminder_card.card)
+            
+            # Hide no reminders text if reminders exist
+            self.no_reminders_text.visible = False
+            self.page.update()
+        else:
+            print(f"Error: {reminder_card} does not have a 'card' attribute.")  # Debugging line
 
     def _delete_reminder(self, reminder_card):
-        """Remove a specific reminder card after a delay."""
+        """Remove a specific reminder card."""
         if reminder_card in self.reminder_cards:
             self.reminder_cards.remove(reminder_card)
             self.reminder_list_view.controls.remove(reminder_card.card)
-            
-            # Show no reminders text if list is now empty
+
+            if isinstance(reminder_card, Appointment_ReminderCard):
+                self.reminder_manager.remove_appointment(reminder_card)
+            elif isinstance(reminder_card, MedIntake_ReminderCard):
+                self.reminder_manager.remove_medicine_intake(reminder_card)
+
+            # Save state only after removing
+            self.reminder_manager.save_state()
+
+            # Show no reminders text if list becomes empty
             if not self.reminder_cards:
                 self.no_reminders_text.visible = True
-            
+
             self.page.update()
 
     def _show_view(self, view_name: str):
         self.current_view = view_name
-        # Clear existing list view and load new reminders
-        self.reminder_list_view.controls.clear()
-        
+        self.reminder_list_view.controls.clear()  # Clear the list view
+
         if view_name == "Medicine Intake":
             self._load_medicine_reminders()
         elif view_name == "Appointment":
             self._load_appointment_reminders()
-        
-        # Show/hide no reminders text based on list contents
+
+        # Update the placeholder visibility
         self.no_reminders_text.visible = len(self.reminder_list_view.controls) == 0
-        
+
         self.page.update()
 
     def _load_medicine_reminders(self):
-        # Load medicine reminders from the ReminderManager
-        for med_card in self.reminder_manager.med_intake_RCs_to_show:
-            self._add_reminder(med_card)
+        # Get list of medicine intake reminders
+        self.med_intake_cards = self.reminder_manager.get_med_intake_cards()
+
+        if not self.med_intake_cards:  # Check if list is empty
+            self.no_reminders_text.visible = True
+            return
+
+        for med_reminder in self.med_intake_cards:
+            self._add_reminder(med_reminder)
 
     def _load_appointment_reminders(self):
-        # Load appointment reminders from the ReminderManager
-        for appt_card in self.reminder_manager.appointments_RCs_to_show:
-            self._add_reminder(appt_card)
+        # Get list of appointment reminders
+        self.appointment_cards = self.reminder_manager.get_appointment_cards()
 
+        if not self.appointment_cards:  # Check if list is empty
+            self.no_reminders_text.visible = True
+            return
+
+        for appt_reminder in self.appointment_cards:
+            if isinstance(appt_reminder, Appointment_ReminderCard):
+                self._add_reminder(appt_reminder)
+            else:
+                print(f"Invalid appointment reminder: {appt_reminder}")  # Debugging line
+    
     def _create_reminder_page(self):
         # Create Reminder Page layout
         return ft.Container(
@@ -121,5 +146,3 @@ class Reminder_Page:
             ),
             visible=False,
         )
-
-
