@@ -51,13 +51,16 @@ class Reminder_Page:
             # Show an error message to the user if needed
 
     def _add_reminder(self, reminder_card):
-        # Add a new reminder card to the list view
-        self.reminder_cards.append(reminder_card)
-        self.reminder_list_view.controls.append(reminder_card.card)
-        
-        # Hide no reminders text if reminders exist
-        self.no_reminders_text.visible = False
-        self.page.update()
+        # Ensure that reminder_card is an instance of the correct class
+        if hasattr(reminder_card, 'card'):
+            self.reminder_cards.append(reminder_card)
+            self.reminder_list_view.controls.append(reminder_card.card)
+            
+            # Hide no reminders text if reminders exist
+            self.no_reminders_text.visible = False
+            self.page.update()
+        else:
+            print(f"Error: {reminder_card} does not have a 'card' attribute.")  # Debugging line
 
     def _delete_reminder(self, reminder_card):
         """Remove a specific reminder card."""
@@ -113,8 +116,11 @@ class Reminder_Page:
             return
 
         for appt_reminder in self.appointment_cards:
-            self._add_reminder(appt_reminder)
-
+            if isinstance(appt_reminder, Appointment_ReminderCard):
+                self._add_reminder(appt_reminder)
+            else:
+                print(f"Invalid appointment reminder: {appt_reminder}")  # Debugging line
+    
     def _create_reminder_page(self):
         # Create Reminder Page layout
         return ft.Container(

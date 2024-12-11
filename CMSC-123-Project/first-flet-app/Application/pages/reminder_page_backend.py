@@ -119,7 +119,8 @@ class Appointment:
 
     def is_day_before(self) -> bool:
         appointment_date = str_to_date(self.appointment_date)
-        return date.today() == (appointment_date - timedelta(days=1))
+        date_before_appointment = appointment_date - timedelta(days=1)
+        return date.today() >= date_before_appointment
 
 
 class MedIntake:
@@ -223,7 +224,7 @@ class Appointment_ReminderCard(ReminderCard):
                         ),
                         ft.Container(
                             content=ft.Text(
-                                f"You have an appointment with Dr. {self.reminder_info.doctor_name} ",
+                                f"You have an appointment with Dr. {self.reminder_info.doctor_name} "
                                 f"on {self.reminder_info.appointment_date} at {self.reminder_info.appointment_time}. Get ready!"
                                 f"Mark this done when you have finished your appointment. :D"
                             ),
