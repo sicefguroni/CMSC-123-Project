@@ -122,7 +122,6 @@ class Appointment:
         date_before_appointment = appointment_date - timedelta(days=1)
         return date.today() >= date_before_appointment
 
-
 class MedIntake:
     def __init__(
         self,
@@ -185,7 +184,6 @@ class MedIntake:
             raise ValueError("Frequency must be in the format 'number/frequency', e.g., '2/daily'.")
 
 
-
 # Reminder Cards: Creates cards for each type of reminder
 # ----------------------------------------------------------- #
 class ReminderCard(ABC):
@@ -226,7 +224,7 @@ class Appointment_ReminderCard(ReminderCard):
                             content=ft.Text(
                                 f"You have an appointment with Dr. {self.reminder_info.doctor_name} "
                                 f"on {self.reminder_info.appointment_date} at {self.reminder_info.appointment_time}. Get ready!"
-                                f"Mark this done when you have finished your appointment. :D"
+                                f" Mark this done when you have finished your appointment. :D"
                             ),
                             padding=ft.padding.only(left=20, right=20),
                         ),
