@@ -1,9 +1,25 @@
 import flet as ft
-from datetime import datetime, timedelta, date, time
+from datetime import date, datetime, time, timedelta
 from typing import Callable
 from abc import ABC, abstractmethod
 import json
 from prescription_backend import PrescriptionManager
+
+
+# Helper Functions
+# ----------------------------------------------------------- #
+def str_to_date(date_str: str) -> date:
+    return datetime.strptime(date_str, "%m/%d/%Y").date()
+
+def date_to_str(date_obj: datetime.date) -> str:
+    return date_obj.strftime("%m/%d/%Y")
+
+def str_to_time(time_str: str) -> datetime.time:
+    return datetime.strptime(time_str, "%H:%M").time()
+
+def time_to_str(time_obj: datetime.time) -> str:
+    return time_obj.strftime("%H:%M")
+
 
 
 # Linked List Template: Data Structure
@@ -83,8 +99,93 @@ class LinkedList:
             yield current.value
             current = current.nxt
 
+class Reminder_SLL(LinkedList):
+    def in_the_list(self, id: int):
+        for reminder in self:
+            if reminder.id == id:
+                return True
+        return False
 
-# Reminder Cards: Hold information to remind users
+
+
+# Reminder: Hold information to remind users
+# ----------------------------------------------------------- #
+class Appointment:
+    def __init__(self, id: int, doctor_name: str, appointment_date: str, appointment_time: str):
+        self.id = id
+        self.doctor_name = doctor_name
+        self.appointment_date = appointment_date
+        self.appointment_time = appointment_time
+
+    def is_day_before(self) -> bool:
+        appointment_date = str_to_date(self.appointment_date)
+        return date.today() == (appointment_date - timedelta(days=1))
+
+
+class MedIntake:
+    def __init__(
+        self,
+        id: int,
+        medicine_name: str,
+        dosage: str,
+        frequency_sched: str,
+        time_interval: float,
+        start_date: str,
+        end_date: str,
+    ):
+        self.id = id
+        self.intake_count_per_freq = 0
+        self.last_intake_datetime = None
+        self.medicine_name = medicine_name
+        self.dosage = dosage
+        self.frequency_number = self._get_number_from_frequency(frequency_sched)
+        self.frequency_days = self._get_days_from_frequency(frequency_sched)
+        self.time_interval = time_interval
+        self.start_date = start_date
+        self.end_date = end_date
+
+    def is_active(self) -> bool:
+        today = date.today()
+        start_date = str_to_date(self.start_date)
+        end_date = str_to_date(self.end_date)
+        return start_date <= today <= end_date
+
+    def is_5_minutes_before_time(self) -> bool:
+        current_time = datetime.now().time()
+        next_intake_time = self._get_next_interval_time()
+        notification_time = (datetime.combine(date.today(), next_intake_time) - timedelta(minutes=5)).time()
+        return current_time >= notification_time
+
+    def _get_next_interval_time(self) -> time:
+        base_time = time(7, 0)
+        interval = timedelta(hours=self.time_interval) * self.intake_count_per_freq
+        next_time = (datetime.combine(date.today(), base_time) + interval).time()
+        return next_time
+
+    @staticmethod
+    def _get_number_from_frequency(input_str: str) -> int:
+        try:
+            number, _ = input_str.split('/')
+            return int(number)
+        except ValueError:
+            raise ValueError("Frequency must be in the format 'number/frequency', e.g., '2/daily'.")
+
+    @staticmethod
+    def _get_days_from_frequency(input_str: str) -> int:
+        try:
+            _, frequency = input_str.split('/')
+            if frequency.lower() == "daily":
+                return 1
+            elif frequency.lower() == "weekly":
+                return 7
+            else:
+                raise ValueError("Invalid frequency. Must be 'daily' or 'weekly'.")
+        except ValueError:
+            raise ValueError("Frequency must be in the format 'number/frequency', e.g., '2/daily'.")
+
+
+
+# Reminder Cards: Creates cards for each type of reminder
 # ----------------------------------------------------------- #
 class ReminderCard(ABC):
     @abstractmethod
@@ -99,14 +200,14 @@ class ReminderCard(ABC):
     def _on_checked(self, e):
         pass
 
+    @abstractmethod
+    def delay_before_delete(self):
+        pass
+
 
 class Appointment_ReminderCard(ReminderCard):
-    def __init__(self, id: int, doctor_name: str, appt_date: str, appt_time: str, on_delete: Callable):
-        self.id = id
-        self.is_done = False
-        self.doctor_name = doctor_name
-        self.appointment_date = appt_date
-        self.appointment_time = appt_time
+    def __init__(self, reminder_info:Appointment, on_delete: Callable):
+        self.reminder_info = reminder_info
         self.on_delete = on_delete
         self.chk_btn = ft.Checkbox(value=False, on_change=self._on_checked)
         self.card = self._create_reminder_card()
@@ -117,13 +218,14 @@ class Appointment_ReminderCard(ReminderCard):
                 content=ft.Column(
                     controls=[
                         ft.ListTile(
-                            title=ft.Text("Upcoming Appointment!"),
+                            title=ft.Text("Upcoming Appointment Tomorrow!"),
                             trailing=self.chk_btn,
                         ),
                         ft.Container(
                             content=ft.Text(
-                                f"You have an appointment with Dr. {self.doctor_name} "
-                                f"on {self.appointment_date} at {self.appointment_time}. Get ready!"
+                                f"You have an appointment with Dr. {self.reminder_info.doctor_name} ",
+                                f"on {self.reminder_info.appointment_date} at {self.reminder_info.appointment_time}. Get ready!"
+                                f"Mark this done when you have finished your appointment. :D"
                             ),
                             padding=ft.padding.only(left=20, right=20),
                         ),
@@ -134,49 +236,21 @@ class Appointment_ReminderCard(ReminderCard):
         )
 
     def notify_user(self) -> ft.Card:
-        if self.is_day_before():
+        if self.reminder_info.is_day_before():
             return self.card
 
     def _on_checked(self, e):
-        if self.chk_btn.value:  # Checkbox is marked
-            self.is_done = True
+        if self.chk_btn.value:
             self.delay_before_delete()
 
     def delay_before_delete(self):
         import threading
         threading.Timer(3, lambda: self.on_delete(self)).start()
-
-    def is_day_before(self) -> bool:
-        appointment_date = self._str_to_date(self.appointment_date)
-        return date.today() == (appointment_date - timedelta(days=1))
-
-    def _str_to_date(self, date_str: str) -> date:
-        return datetime.strptime(date_str, "%Y-%m-%d").date()
 
 
 class MedIntake_ReminderCard(ReminderCard):
-    def __init__(
-        self,
-        id: int,
-        medicine_name: str,
-        dosage: str,
-        frequency_sched: str,
-        time_interval: float,
-        start_date: date,
-        end_date: date,
-        on_delete: Callable,
-    ):
-        self.id = id
-        self.intake_count_per_freq = 0
-        self.frequency_sched_count = 0
-        self.last_intake_datetime = None
-        self.medicine_name = medicine_name
-        self.dosage = dosage
-        self.frequency_number = self._str_frequency_to_int(frequency_sched)
-        self.frequency_schedule = self._str_frequency_sched_to_timedelta(frequency_sched)
-        self.time_interval = timedelta(hours=int(time_interval))
-        self.start_date = start_date
-        self.end_date = end_date
+    def __init__(self, reminder_info:MedIntake, on_delete: Callable):
+        self.reminder_info = reminder_info
         self.on_delete = on_delete
         self.chk_btn = ft.Checkbox(value=False, on_change=self._on_checked)
         self.card = self._create_reminder_card()
@@ -187,13 +261,13 @@ class MedIntake_ReminderCard(ReminderCard):
                 content=ft.Column(
                     controls=[
                         ft.ListTile(
-                            title=ft.Text(f"{self.medicine_name} ({self.dosage})"),
+                            title=ft.Text(f"{self.reminder_info.medicine_name} ({self.reminder_info.dosage})"),
                             trailing=self.chk_btn,
                         ),
                         ft.Container(
                             content=ft.Text(
-                                f"It's time to take your {self.medicine_name} ({self.dosage})! "
-                                f"Once you're done, check the checkbox! :D"
+                                f"It's almost time to take your {self.reminder_info.medicine_name} ({self.reminder_info.dosage})! "
+                                f"Once you're done, mark the reminder done! :D"
                             ),
                             padding=ft.padding.only(left=20, right=20),
                         ),
@@ -204,66 +278,37 @@ class MedIntake_ReminderCard(ReminderCard):
         )
 
     def notify_user(self) -> ft.Card:
-        if self.is_active() and self.is_time():
+        if self.reminder_info.is_active() and self.reminder_info.is_5_minutes_before_time():
             return self.card
 
     def _on_checked(self, e):
         if self.chk_btn.value:  # Checkbox is marked
-            self.intake_count_per_freq += 1
-            self.last_intake_datetime = datetime.now()
+            self.reminder_info.intake_count_per_freq += 1
+            self.reminder_info.last_intake_datetime = str_to_date(datetime.now())
             self.delay_before_delete()
 
     def delay_before_delete(self):
         import threading
         threading.Timer(3, lambda: self.on_delete(self)).start()
 
-    def is_active(self) -> bool:
-        today = date.today()
-        return self.start_date <= today <= self.end_date
+    
 
-    def is_time(self) -> bool:
-        current_time = datetime.now().time()
-        next_intake_time = self._get_next_interval_time()
-        notification_time = (datetime.combine(date.today(), next_intake_time) - timedelta(minutes=5)).time()
-        return current_time >= notification_time
-
-    def _get_next_interval_time(self) -> time:
-        base_time = time(7, 0)
-        interval = timedelta(seconds=self.intake_count_per_freq * self.time_interval.total_seconds())
-        next_time = (datetime.combine(date.today(), base_time) + interval).time()
-        return next_time
-
-    def _str_frequency_to_int(self, freq: str) -> int:
-        mapping = {"daily": 1, "weekly": 7}
-        return mapping.get(freq.lower(), 0)
-
-    def _str_frequency_sched_to_timedelta(self, freq: str) -> timedelta:
-        mapping = {"daily": timedelta(days=1), "weekly": timedelta(days=7)}
-        return mapping.get(freq.lower(), timedelta(days=0))
-
-
-class ReminderCard_SLL(LinkedList):
-    def in_the_list(self, id: int):
-        for card in self:
-            if card.id == id:
-                return True
-        return False
-
-# File paths remain unchanged
-APPOINTMENT_RCs_TO_SHOW_File = "appointment_RCs_to_show.json"
-MED_INTAKE_RCs_TO_SHOW_File = "med_intake_RCs_to_show.json"
-CURRENT_APPOINTMENTS_RCs_File = "current_appointments_RCList.json"
-CURRENT_MEDICINE_INTAKE_RCs_File = "current_medicine_intake_RCList.json"
+# File names to save reminders
+# ----------------------------------------------------------- #
+APPOINTMENT_TO_SHOW_File = "appointment_to_show.json"
+MED_INTAKE_TO_SHOW_File = "med_intake_to_show.json"
 FINISHED_APPOINTMENTS_File = "finished_appointments.json"
 FINISHED_MED_INTAKE_File = "finished_med_intake.json"
 
 
 class ReminderManager:
     def __init__(self):
-        self.appointments_RCs_to_show = ReminderCard_SLL()
-        self.med_intake_RCs_to_show = ReminderCard_SLL()
-        self.on_going_medicine_intake = ReminderCard_SLL()
-        self.appointments_today = ReminderCard_SLL()
+        self.appointments_RCs_to_show = Reminder_SLL()
+        self.med_intake_RCs_to_show = Reminder_SLL()
+
+        self.med_intake_to_show = Reminder_SLL()
+        self.appointments_to_show = Reminder_SLL()
+
         self.finished_appointments = LinkedList()
         self.finished_medicine_intake = LinkedList()
 
@@ -271,163 +316,167 @@ class ReminderManager:
         prescription_module = PrescriptionManager()
         all_prescriptions = prescription_module.get_all_prescriptions()
 
+        # Collect appointments
         for p in all_prescriptions:
-            # Skip if already marked as finished or added
-            if self.finished_appointments.found(p["id"]) or self.appointments_today.in_the_list(p["id"]):
+            if self.finished_appointments.found(p["id"]) or self.appointments_to_show.in_the_list(p["id"]):
                 continue
 
-            appointment_date = datetime.strptime(p["appointment_date"], "%m/%d/%Y").date()
-            if appointment_date == date.today():
-                new_appt_reminder = Appointment_ReminderCard(
-                    id=p["id"],
-                    doctor_name=p["doctor"],
-                    appt_date=p["appointment_date"],
-                    appt_time=p["appointment_time"],
-                    on_delete=self.remove_appointment,
-                )
-                self.appointments_today.add(new_appt_reminder)
+            new_appt_reminder = Appointment(
+                id=p["id"],
+                doctor_name=p["doctor"],
+                appointment_date=p["appointment_date"],
+                appointment_time=p["appointment_time"],
+            )
 
+            self.appointments_to_show.add(new_appt_reminder)
+
+            print("New Prescription! Reminder created")
+
+        # Collect medicine intake reminders
         for p in all_prescriptions:
-            if self.finished_medicine_intake.found(p["id"]) or self.on_going_medicine_intake.in_the_list(p["id"]):
+            if self.finished_medicine_intake.found(p["id"]) or self.med_intake_to_show.in_the_list(p["id"]):
                 continue
 
-            start_date = datetime.strptime(p["start_date"], "%m/%d/%Y").date()
-            end_date = datetime.strptime(p["end_date"], "%m/%d/%Y").date()
-            today = date.today()
-            if start_date <= today <= end_date:
-                new_MI_reminder = MedIntake_ReminderCard(
-                    id=p["id"],
-                    medicine_name=p["medication"],
-                    dosage=p["dosage"],
-                    frequency_sched=p["frequency"],
-                    time_interval=p["time_interval"],
-                    start_date=start_date,
-                    end_date=end_date,
-                    on_delete=self.remove_medicine_intake,
-                )
-                self.on_going_medicine_intake.add(new_MI_reminder)
+            new_MI_reminder = MedIntake(
+                id=p["id"],
+                medicine_name=p["medication"],
+                dosage=p["dosage"],
+                frequency_sched=p["frequency"],
+                time_interval=p["time_interval"],
+                start_date=p["start_date"],
+                end_date=p["end_date"],
+            )
+            self.med_intake_to_show.add(new_MI_reminder)
 
     def notify_user(self):
-        for appt in self.appointments_today:
-            if not appt.is_done:
-                self.appointments_RCs_to_show.add(appt)
+        self.appointments_RCs_to_show = Reminder_SLL()
+        self.med_intake_RCs_to_show = Reminder_SLL()
 
-        for medIntake in self.on_going_medicine_intake:
+        # Check appointments for reminders
+        for appt in self.appointments_to_show:
+            if appt.is_day_before():
+                self.appointments_RCs_to_show.add(Appointment_ReminderCard(appt, self.remove_appointment))
+
+        # Check medicine intake for reminders
+        for medIntake in self.med_intake_to_show:
             if medIntake.is_active():
-                reminder = medIntake.notify_user()
-                if reminder:
-                    self.med_intake_RCs_to_show.add(reminder)
+                card = MedIntake_ReminderCard(medIntake, self.remove_medicine_intake)
+                if card.notify_user():
+                    self.med_intake_RCs_to_show.add(card)
 
     def remove_appointment(self, card: Appointment_ReminderCard):
         self.appointments_RCs_to_show.remove(card)
-        self.appointments_today.remove(card)
-        self.finished_appointments.add(card.id)
-        self.save_to_file()
+        self.appointments_to_show.remove(card.reminder_info)
+        self.finished_appointments.add(card.reminder_info.id)  # Store ID in the linked list
+        self.save_state()
 
     def remove_medicine_intake(self, card: MedIntake_ReminderCard):
         self.med_intake_RCs_to_show.remove(card)
-        self.on_going_medicine_intake.remove(card)
-        self.finished_medicine_intake.add(card.id)
-        self.save_to_file()
+        self.med_intake_to_show.remove(card.reminder_info)
+        self.finished_medicine_intake.add(card.reminder_info.id)  # Store ID in the linked list
+        self.save_state()
 
-    def save_to_file(self):
+    def save_state(self):
         try:
-            # Serialize appointment reminders
-            with open(CURRENT_APPOINTMENTS_RCs_File, "w") as f:
+            # Save appointments to file
+            with open(APPOINTMENT_TO_SHOW_File, "w") as f:
                 json.dump([
                     {
-                        "id": card.id,
-                        "doctor_name": card.doctor_name,
-                        "appointment_date": card.appointment_date.strftime("%Y-%m-%d"),  # Convert to string
-                        "appointment_time": card.appointment_time.strftime("%H:%M:%S"),  # Convert to string
+                        "id": appt.id,
+                        "doctor_name": appt.doctor_name,
+                        "appointment_date": appt.appointment_date,
+                        "appointment_time": appt.appointment_time,
                     }
-                    for card in self.appointments_today
+                    for appt in self.appointments_to_show
                 ], f)
 
-            # Serialize medicine intake reminders
-            with open(CURRENT_MEDICINE_INTAKE_RCs_File, "w") as f:
+            # Save medicine intake to file
+            with open(MED_INTAKE_TO_SHOW_File, "w") as f:
                 json.dump([
                     {
-                        "id": card.id,
-                        "medicine_name": card.medicine_name,
-                        "dosage": card.dosage,
-                        "frequency_schedule": card.frequency_schedule,
-                        "time_interval": card.time_interval.total_seconds(),  # Convert timedelta to seconds
-                        "start_date": card.start_date.strftime("%Y-%m-%d"),  # Convert date to string
-                        "end_date": card.end_date.strftime("%Y-%m-%d"),  # Convert date to string
+                        "id": med.id,
+                        "medicine_name": med.medicine_name,
+                        "dosage": med.dosage,
+                        "frequency_sched": med.frequency_sched,
+                        "time_interval": med.time_interval,
+                        "start_date": med.start_date,
+                        "end_date": med.end_date,
                     }
-                    for card in self.on_going_medicine_intake
+                    for med in self.med_intake_to_show
                 ], f)
 
-            # Serialize finished reminders
+            # Save finished reminders
             with open(FINISHED_APPOINTMENTS_File, "w") as f:
-                json.dump(list(self.finished_appointments), f)
+                json.dump(list(self.finished_appointments), f)  # Save IDs, not node objects
 
             with open(FINISHED_MED_INTAKE_File, "w") as f:
-                json.dump(list(self.finished_medicine_intake), f)
+                json.dump(list(self.finished_medicine_intake), f)  # Save IDs, not node objects
 
         except Exception as e:
             print(f"Error saving to file: {e}")
 
-
     def load_from_file(self):
         try:
-            self.appointments_today = ReminderCard_SLL()
-            self.on_going_medicine_intake = ReminderCard_SLL()
+            self.appointments_to_show = Reminder_SLL()
+            self.med_intake_to_show = Reminder_SLL()
             self.finished_appointments = LinkedList()
             self.finished_medicine_intake = LinkedList()
 
-            # Load appointment reminders
+            # Load appointments
             try:
-                with open(CURRENT_APPOINTMENTS_RCs_File, "r") as f:
+                with open(APPOINTMENT_TO_SHOW_File, "r") as f:
                     appointments = json.load(f)
                     for appt_data in appointments:
-                        new_appt = Appointment_ReminderCard(
+                        self.appointments_to_show.add(Appointment(
                             id=appt_data["id"],
                             doctor_name=appt_data["doctor_name"],
-                            appt_date=datetime.strptime(appt_data["appointment_date"], "%Y-%m-%d").date(),  # Convert string back to date
-                            appt_time=datetime.strptime(appt_data["appointment_time"], "%H:%M:%S").time(),  # Convert string back to time
-                            on_delete=self.remove_appointment,
-                        )
-                        self.appointments_today.add(new_appt)
+                            appointment_date=appt_data["appointment_date"],
+                            appointment_time=appt_data["appointment_time"],
+                        ))
             except (FileNotFoundError, json.JSONDecodeError):
-                print(f"Skipping loading {CURRENT_APPOINTMENTS_RCs_File} due to missing or invalid data.")
+                print(f"Skipping loading {APPOINTMENT_TO_SHOW_File} due to missing or invalid data.")
 
-            # Load medicine intake reminders
+            # Load medicine intake
             try:
-                with open(CURRENT_MEDICINE_INTAKE_RCs_File, "r") as f:
+                with open(MED_INTAKE_TO_SHOW_File, "r") as f:
                     med_intakes = json.load(f)
                     for med_data in med_intakes:
-                        new_med = MedIntake_ReminderCard(
+                        self.med_intake_to_show.add(MedIntake(
                             id=med_data["id"],
                             medicine_name=med_data["medicine_name"],
                             dosage=med_data["dosage"],
-                            frequency_sched=med_data["frequency_schedule"],
-                            time_interval=timedelta(seconds=med_data["time_interval"]),  # Convert seconds back to timedelta
-                            start_date=datetime.strptime(med_data["start_date"], "%Y-%m-%d").date(),  # Convert string back to date
-                            end_date=datetime.strptime(med_data["end_date"], "%Y-%m-%d").date(),  # Convert string back to date
-                            on_delete=self.remove_medicine_intake,
-                        )
-                        self.on_going_medicine_intake.add(new_med)
+                            frequency_sched=med_data["frequency_sched"],
+                            time_interval=med_data["time_interval"],
+                            start_date=med_data["start_date"],
+                            end_date=med_data["end_date"],
+                        ))
             except (FileNotFoundError, json.JSONDecodeError):
-                print(f"Skipping loading {CURRENT_MEDICINE_INTAKE_RCs_File} due to missing or invalid data.")
+                print(f"Skipping loading {MED_INTAKE_TO_SHOW_File} due to missing or invalid data.")
 
             # Load finished reminders
             try:
                 with open(FINISHED_APPOINTMENTS_File, "r") as f:
-                    self.finished_appointments = LinkedList(json.load(f))
+                    self.finished_appointments = LinkedList()
+                    for id in json.load(f):
+                        self.finished_appointments.add(id)  # Adding IDs, not nodes
             except (FileNotFoundError, json.JSONDecodeError):
                 print(f"Skipping loading {FINISHED_APPOINTMENTS_File} due to missing or invalid data.")
 
             try:
                 with open(FINISHED_MED_INTAKE_File, "r") as f:
-                    self.finished_medicine_intake = LinkedList(json.load(f))
+                    self.finished_medicine_intake = LinkedList()
+                    for id in json.load(f):
+                        self.finished_medicine_intake.add(id)  # Adding IDs, not nodes
             except (FileNotFoundError, json.JSONDecodeError):
                 print(f"Skipping loading {FINISHED_MED_INTAKE_File} due to missing or invalid data.")
 
         except Exception as e:
             print(f"Error loading from file: {e}")
 
-
+    def get_appointment_cards(self):
+        return self.appointments_RCs_to_show
+    
+    def get_med_intake_cards(self):
+        return self.med_intake_RCs_to_show
 
 
