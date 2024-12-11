@@ -1,6 +1,6 @@
 import flet as ft
 from typing import List
-from pages.reminder_page_backend import ReminderManager, Reminder_SLL, LinkedList, Appointment_ReminderCard, MedIntake_ReminderCard
+from pages.reminder_page_backend import ReminderManager, Appointment_ReminderCard, MedIntake_ReminderCard
 
 
 class Reminder_Page:
@@ -8,8 +8,6 @@ class Reminder_Page:
         self.page = page
         self.current_view = "Medicine Intake"  # Default view
         self.reminder_manager = ReminderManager()  # Instantiate the backend ReminderManager
-        self.appointment_cards = Reminder_SLL()  # List of current appointment reminders
-        self.med_intake_cards = Reminder_SLL() # List of current med_intake_reminders
         self.reminder_cards = []
 
         self.notification_switch = ft.Switch(label="Enable Notifications", value=True)
@@ -81,7 +79,6 @@ class Reminder_Page:
 
             self.page.update()
 
-
     def _show_view(self, view_name: str):
         self.current_view = view_name
         self.reminder_list_view.controls.clear()  # Clear the list view
@@ -97,30 +94,26 @@ class Reminder_Page:
         self.page.update()
 
     def _load_medicine_reminders(self):
-        # Get linked list of medicine intake reminders
+        # Get list of medicine intake reminders
         self.med_intake_cards = self.reminder_manager.get_med_intake_cards()
 
-        if not self.med_intake_cards.head:  # Check if list is empty
+        if not self.med_intake_cards:  # Check if list is empty
             self.no_reminders_text.visible = True
             return
 
-        current = self.med_intake_cards.head
-        while current:  # Iterate until the end of the list
-            self._add_reminder(current.value)
-            current = current.nxt
+        for med_reminder in self.med_intake_cards:
+            self._add_reminder(med_reminder)
 
     def _load_appointment_reminders(self):
-        # Get linked list of appointment reminders
+        # Get list of appointment reminders
         self.appointment_cards = self.reminder_manager.get_appointment_cards()
 
-        if not self.appointment_cards.head:  # Check if list is empty
+        if not self.appointment_cards:  # Check if list is empty
             self.no_reminders_text.visible = True
             return
 
-        current = self.appointment_cards.head
-        while current:  # Iterate until the end of the list
-            self._add_reminder(current.value)
-            current = current.nxt
+        for appt_reminder in self.appointment_cards:
+            self._add_reminder(appt_reminder)
 
     def _create_reminder_page(self):
         # Create Reminder Page layout
@@ -147,5 +140,3 @@ class Reminder_Page:
             ),
             visible=False,
         )
-
-

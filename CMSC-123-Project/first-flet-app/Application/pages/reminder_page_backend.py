@@ -158,7 +158,7 @@ class MedIntake:
 
     def _get_next_interval_time(self) -> time:
         base_time = time(7, 0)
-        interval = timedelta(hours=self.time_interval) * self.intake_count_per_freq
+        interval = timedelta(hours=int(self.time_interval)) * self.intake_count_per_freq
         next_time = (datetime.combine(date.today(), base_time) + interval).time()
         return next_time
 
@@ -284,7 +284,7 @@ class MedIntake_ReminderCard(ReminderCard):
     def _on_checked(self, e):
         if self.chk_btn.value:  # Checkbox is marked
             self.reminder_info.intake_count_per_freq += 1
-            self.reminder_info.last_intake_datetime = str_to_date(datetime.now())
+            self.reminder_info.last_intake_datetime = date_to_str(datetime.now())
             self.delay_before_delete()
 
     def delay_before_delete(self):
@@ -301,16 +301,18 @@ FINISHED_APPOINTMENTS_File = "finished_appointments.json"
 FINISHED_MED_INTAKE_File = "finished_med_intake.json"
 
 
+
 class ReminderManager:
     def __init__(self):
-        self.appointments_RCs_to_show = Reminder_SLL()
-        self.med_intake_RCs_to_show = Reminder_SLL()
+        # Using dictionaries instead of linked lists
+        self.appointments_RCs_to_show = {}  # Dictionary to hold Appointment_ReminderCard objects
+        self.med_intake_RCs_to_show = {}  # Dictionary to hold MedIntake_ReminderCard objects
 
-        self.med_intake_to_show = Reminder_SLL()
-        self.appointments_to_show = Reminder_SLL()
+        self.med_intake_to_show = {}  # Dictionary to hold MedIntake objects
+        self.appointments_to_show = {}  # Dictionary to hold Appointment objects
 
-        self.finished_appointments = LinkedList()
-        self.finished_medicine_intake = LinkedList()
+        self.finished_appointments = set()  # Using a set to store finished appointment IDs
+        self.finished_medicine_intake = set()  # Using a set to store finished medicine intake IDs
 
     def collect_ongoing_prescriptions(self):
         prescription_module = PrescriptionManager()
@@ -318,7 +320,7 @@ class ReminderManager:
 
         # Collect appointments
         for p in all_prescriptions:
-            if self.finished_appointments.found(p["id"]) or self.appointments_to_show.in_the_list(p["id"]):
+            if p["id"] in self.finished_appointments or p["id"] in self.appointments_to_show:
                 continue
 
             new_appt_reminder = Appointment(
@@ -328,13 +330,12 @@ class ReminderManager:
                 appointment_time=p["appointment_time"],
             )
 
-            self.appointments_to_show.add(new_appt_reminder)
-
+            self.appointments_to_show[p["id"]] = new_appt_reminder
             print("New Prescription! Reminder created")
 
         # Collect medicine intake reminders
         for p in all_prescriptions:
-            if self.finished_medicine_intake.found(p["id"]) or self.med_intake_to_show.in_the_list(p["id"]):
+            if p["id"] in self.finished_medicine_intake or p["id"] in self.med_intake_to_show:
                 continue
 
             new_MI_reminder = MedIntake(
@@ -346,34 +347,34 @@ class ReminderManager:
                 start_date=p["start_date"],
                 end_date=p["end_date"],
             )
-            self.med_intake_to_show.add(new_MI_reminder)
+            self.med_intake_to_show[p["id"]] = new_MI_reminder
 
     def notify_user(self):
-        self.appointments_RCs_to_show = Reminder_SLL()
-        self.med_intake_RCs_to_show = Reminder_SLL()
+        self.appointments_RCs_to_show = {}
+        self.med_intake_RCs_to_show = {}
 
         # Check appointments for reminders
-        for appt in self.appointments_to_show:
+        for appt_id, appt in self.appointments_to_show.items():
             if appt.is_day_before():
-                self.appointments_RCs_to_show.add(Appointment_ReminderCard(appt, self.remove_appointment))
+                self.appointments_RCs_to_show[appt_id] = Appointment_ReminderCard(appt, self.remove_appointment)
 
         # Check medicine intake for reminders
-        for medIntake in self.med_intake_to_show:
+        for med_id, medIntake in self.med_intake_to_show.items():
             if medIntake.is_active():
                 card = MedIntake_ReminderCard(medIntake, self.remove_medicine_intake)
                 if card.notify_user():
-                    self.med_intake_RCs_to_show.add(card)
+                    self.med_intake_RCs_to_show[med_id] = card
 
     def remove_appointment(self, card: Appointment_ReminderCard):
-        self.appointments_RCs_to_show.remove(card)
-        self.appointments_to_show.remove(card.reminder_info)
-        self.finished_appointments.add(card.reminder_info.id)  # Store ID in the linked list
+        del self.appointments_RCs_to_show[card.reminder_info.id]
+        del self.appointments_to_show[card.reminder_info.id]
+        self.finished_appointments.add(card.reminder_info.id)  # Store ID in the set
         self.save_state()
 
     def remove_medicine_intake(self, card: MedIntake_ReminderCard):
-        self.med_intake_RCs_to_show.remove(card)
-        self.med_intake_to_show.remove(card.reminder_info)
-        self.finished_medicine_intake.add(card.reminder_info.id)  # Store ID in the linked list
+        del self.med_intake_RCs_to_show[card.reminder_info.id]
+        del self.med_intake_to_show[card.reminder_info.id]
+        self.finished_medicine_intake.add(card.reminder_info.id)  # Store ID in the set
         self.save_state()
 
     def save_state(self):
@@ -387,7 +388,7 @@ class ReminderManager:
                         "appointment_date": appt.appointment_date,
                         "appointment_time": appt.appointment_time,
                     }
-                    for appt in self.appointments_to_show
+                    for appt in self.appointments_to_show.values()
                 ], f)
 
             # Save medicine intake to file
@@ -402,37 +403,37 @@ class ReminderManager:
                         "start_date": med.start_date,
                         "end_date": med.end_date,
                     }
-                    for med in self.med_intake_to_show
+                    for med in self.med_intake_to_show.values()
                 ], f)
 
             # Save finished reminders
             with open(FINISHED_APPOINTMENTS_File, "w") as f:
-                json.dump(list(self.finished_appointments), f)  # Save IDs, not node objects
+                json.dump(list(self.finished_appointments), f)  # Save IDs in the set
 
             with open(FINISHED_MED_INTAKE_File, "w") as f:
-                json.dump(list(self.finished_medicine_intake), f)  # Save IDs, not node objects
+                json.dump(list(self.finished_medicine_intake), f)  # Save IDs in the set
 
         except Exception as e:
             print(f"Error saving to file: {e}")
 
     def load_from_file(self):
         try:
-            self.appointments_to_show = Reminder_SLL()
-            self.med_intake_to_show = Reminder_SLL()
-            self.finished_appointments = LinkedList()
-            self.finished_medicine_intake = LinkedList()
+            self.appointments_to_show = {}
+            self.med_intake_to_show = {}
+            self.finished_appointments = set()
+            self.finished_medicine_intake = set()
 
             # Load appointments
             try:
                 with open(APPOINTMENT_TO_SHOW_File, "r") as f:
                     appointments = json.load(f)
                     for appt_data in appointments:
-                        self.appointments_to_show.add(Appointment(
+                        self.appointments_to_show[appt_data["id"]] = Appointment(
                             id=appt_data["id"],
                             doctor_name=appt_data["doctor_name"],
                             appointment_date=appt_data["appointment_date"],
                             appointment_time=appt_data["appointment_time"],
-                        ))
+                        )
             except (FileNotFoundError, json.JSONDecodeError):
                 print(f"Skipping loading {APPOINTMENT_TO_SHOW_File} due to missing or invalid data.")
 
@@ -441,7 +442,7 @@ class ReminderManager:
                 with open(MED_INTAKE_TO_SHOW_File, "r") as f:
                     med_intakes = json.load(f)
                     for med_data in med_intakes:
-                        self.med_intake_to_show.add(MedIntake(
+                        self.med_intake_to_show[med_data["id"]] = MedIntake(
                             id=med_data["id"],
                             medicine_name=med_data["medicine_name"],
                             dosage=med_data["dosage"],
@@ -449,24 +450,20 @@ class ReminderManager:
                             time_interval=med_data["time_interval"],
                             start_date=med_data["start_date"],
                             end_date=med_data["end_date"],
-                        ))
+                        )
             except (FileNotFoundError, json.JSONDecodeError):
                 print(f"Skipping loading {MED_INTAKE_TO_SHOW_File} due to missing or invalid data.")
 
             # Load finished reminders
             try:
                 with open(FINISHED_APPOINTMENTS_File, "r") as f:
-                    self.finished_appointments = LinkedList()
-                    for id in json.load(f):
-                        self.finished_appointments.add(id)  # Adding IDs, not nodes
+                    self.finished_appointments = set(json.load(f))  # Load IDs into the set
             except (FileNotFoundError, json.JSONDecodeError):
                 print(f"Skipping loading {FINISHED_APPOINTMENTS_File} due to missing or invalid data.")
 
             try:
                 with open(FINISHED_MED_INTAKE_File, "r") as f:
-                    self.finished_medicine_intake = LinkedList()
-                    for id in json.load(f):
-                        self.finished_medicine_intake.add(id)  # Adding IDs, not nodes
+                    self.finished_medicine_intake = set(json.load(f))  # Load IDs into the set
             except (FileNotFoundError, json.JSONDecodeError):
                 print(f"Skipping loading {FINISHED_MED_INTAKE_File} due to missing or invalid data.")
 
@@ -474,9 +471,10 @@ class ReminderManager:
             print(f"Error loading from file: {e}")
 
     def get_appointment_cards(self):
-        return self.appointments_RCs_to_show
-    
+        return list(self.appointments_RCs_to_show.values())
+
     def get_med_intake_cards(self):
-        return self.med_intake_RCs_to_show
+        return list(self.med_intake_RCs_to_show.values())
+
 
 
